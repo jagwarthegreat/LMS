@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Twitter -->
+  <!-- <meta name="twitter:site" content="@bootstrapdash">
+    <meta name="twitter:creator" content="@bootstrapdash">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Azia">
+    <meta name="twitter:description" content="Responsive Bootstrap 4 Dashboard Template">
+    <meta name="twitter:image" content="https://www.bootstrapdash.com/azia/img/azia-social.png"> -->
+
+  <!-- Facebook -->
+  <!-- <meta property="og:url" content="https://www.bootstrapdash.com/azia">
+    <meta property="og:title" content="Azia">
+    <meta property="og:description" content="Responsive Bootstrap 4 Dashboard Template">
+
+    <meta property="og:image" content="https://www.bootstrapdash.com/azia/img/azia-social.png">
+    <meta property="og:image:secure_url" content="https://www.bootstrapdash.com/azia/img/azia-social.png">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="600"> -->
+
+  <!-- Meta -->
+  <meta name="description" content="Responsive Bootstrap 4 Dashboard Template">
+  <meta name="author" content="BootstrapDash">
+
+  <title>Login - LMS</title>
+
+  <!-- vendor css -->
+  <link href="{{ url_for('static', filename='assets/lib/fontawesome-free/css/all.min.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='assets/lib/ionicons/css/ionicons.min.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='assets/lib/typicons.font/typicons.css') }}" rel="stylesheet">
+
+  <!-- azia CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/azia.css') }}">
+
+  <style>
+    .az-card-signin {
+      height: auto;
+    }
+  </style>
+</head>
+
+<body class="az-body">
+
+  <div class="az-signin-wrapper">
+    <div class="az-card-signin">
+
+      <div class="az-signin-header">
+        <h2>Welcome back!</h2>
+        <h5>Please sign in to continue</h5>
+
+        <form method="POST">
+          <div class="form-group">
+            <label>Username</label>
+            <input type="text" class="form-control" placeholder="Enter your username" name="username">
+          </div><!-- form-group -->
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" class="form-control" placeholder="Enter your password" name="password">
+          </div><!-- form-group -->
+          <button class="btn btn-az-primary btn-block">Sign In</button>
+
+          {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+          {% for category, message in messages %}
+          {% if category == 'error' %}
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+          {% else %}
+          <div class="alert alert-info alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+          {% endif %}
+          {% endfor %}
+          {% endif %}
+          {% endwith %}
+
+        </form>
+      </div><!-- az-signin-header -->
+    </div><!-- az-card-signin -->
+  </div><!-- az-signin-wrapper -->
+
+  <script src="{{ url_for('static', filename='assets/lib/jquery/jquery.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/lib/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/lib/ionicons/ionicons.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/jquery.cookie.js') }}" type="text/javascript"></script>
+  <script src="{{ url_for('static', filename='assets/js/jquery.cookie.js') }}" type="text/javascript"></script>
+
+  <script src="{{ url_for('static', filename='assets/js/azia.js') }}"></script>
+  <script>
+    $(function() {
+      'use strict'
+
+    });
+  </script>
+</body>
+
+</html>

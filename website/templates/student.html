@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block title %}Students{% endblock %}
+
+{% block content %}
+{% include "response.html" %}
+<div class="page-title">
+    <div class="row">
+        <div class="col-12 col-md-6 order-md-1 order-last">
+            <h3>Students</h3>
+            <!-- <p class="text-subtitle text-muted">Navbar will appear on the top of the page.</p> -->
+        </div>
+        <div class="col-12 col-md-6 order-md-2 order-first">
+            <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{url_for('views.home')}}">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Students Page
+                    </li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<!-- Basic Tables start -->
+<section class="section">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between">
+            <span>Manage Student Data</span>
+            <a href="#" class="btn icon icon-left btn-primary" data-bs-toggle="modal" data-bs-target="#addAsdSignModal">
+                <i class="bi bi-plus-lg"></i>
+                Add Student
+            </a>
+        </div>
+        <div class="card-body">
+            <table class="table" id="table1">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Student</th>
+                        <th>Year</th>
+                        <th>Section</th>
+                        <th>Contact</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ student.student_fname +" "+ student.student_mname +" "+ student.student_lname }}</td>
+                        <td>{{ student.student_year }}</td>
+                        <td>{{ student.student_section }}</td>
+                        <td>{{ student.student_contact_number }}</td>
+                        <td>
+                            <a class="btn icon btn-danger" onClick="deleteStudent({{ student.student_id }})">
+                                <i class="bi bi-trash3"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="addAsdSignModal" tabindex="-1" aria-labelledby="addAsdSignModalTitle" aria-hidden="true"
+    style="display: none;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addAsdSignModalTitle">Add Student</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="feather feather-x">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <form method="POST">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label>First Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="first_name" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Middle Name </label>
+                                <input type="text" class="form-control" name="middle_name" />
+                            </div>
+                            <div class="form-group">
+                                <label>Last Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="last_name" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Year <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="year" />
+                            </div>
+                            <div class="form-group">
+                                <label>Section </label>
+                                <input type="text" class="form-control" name="section" />
+                            </div>
+                            <div class="form-group">
+                                <label>Address </label>
+                                <input type="text" class="form-control" name="address" />
+                            </div>
+                            <div class="form-group">
+                                <label>Contact </label>
+                                <input type="text" class="form-control" name="contact" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
+                        <i class="bx bx-x d-block d-sm-none"></i>
+                        <span class="d-none d-sm-block">Close</span>
+                    </button>
+
+                    <button type="submit" class="btn btn-primary ml-1">
+                        <i class=" bx bx-check d-block d-sm-none"></i>
+                        <span class="d-none d-sm-block">Save changes</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function deleteStudent(studentId) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Are you sure you want to delete this item?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonClass: "btn-danger",
+            confirmButtonText: "Yes, delete!",
+            cancelButtonText: "No, cancel!",
+        }).then(function(result) {
+            if (result.value) {
+                fetch("/student/destroy", {
+                    method: "POST",
+                    body: JSON.stringify({ studentId: studentId })
+                }).then((_res) => {
+                    window.location.href = "/student";
+                });
+            }
+        });
+    }
+</script>
+
+<script src="{{ url_for('static', filename='assets/js/pages/datatables.js') }}"></script>
+<!-- Basic Tables end -->
+{% endblock %}
