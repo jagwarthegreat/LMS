@@ -20,7 +20,7 @@ def create_app():
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
 
-    from .models import User, Student, AutismSign, AutismPrediction
+    from .models import User, Student, Category, AutismPrediction
 
     # this will create the models schema
     # create_database(app)

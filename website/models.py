@@ -24,10 +24,11 @@ class Student(db.Model):
     student_contact_number = db.Column(db.String(16), nullable=True)
     date_added = db.Column(db.DateTime(timezone=True), default=func.now())
 
-class AutismSign(db.Model):
-    __tablename__ = 'tbl_autism_signs'
-    autism_sign_id = db.Column(db.Integer, primary_key=True)
-    autism_sign = db.Column(db.String(150))
+class Category(db.Model):
+    __tablename__ = 'tbl_book_category'
+    book_category_id = db.Column(db.Integer, primary_key=True)
+    book_category = db.Column(db.String(150))
+    book_category_desc = db.Column(db.Text(), nullable=True)
     date_added = db.Column(db.DateTime(timezone=True), default=func.now())
 
 class AutismPrediction(db.Model):
@@ -38,4 +39,3 @@ class AutismPrediction(db.Model):
     status = db.Column(db.String(50), nullable=True)
     date_added = db.Column(db.DateTime(timezone=True), default=func.now())
     student = db.relationship('Student')
-    autism_sign = db.relationship('AutismSign')

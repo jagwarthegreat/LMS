@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% block title %}Book Categories{% endblock %}
+
+{% block content %}
+
+<div class="az-content-body pd-lg d-flex flex-column">
+    <div class="az-content-breadcrumb">
+        <span>Dashboard</span>
+        <span>Masterdata</span>
+        <span>Categories</span>
+    </div>
+    <h2 class="az-content-title">Books Category</h2>
+
+
+    {% include "response.html" %}
+
+    <div class="card card-dashboard-five mb-3">
+        <div class="card-header">
+            <div class="row row-xs">
+                <div class="col-sm-2">
+                    <a class="btn btn-dark btn-with-icon" data-toggle="modal" data-target="#addCategoryModal">
+                        <i class="typcn typcn-plus"></i> Add Category
+                    </a>
+                </div>
+            </div>
+        </div><!-- card-header -->
+        <div class="card-body row row-sm">
+            <div class="table-responsive">
+                <table class="table table-bordered mg-b-0" id="table1">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Category</th>
+                            <th>Description</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for category in categories %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ category.book_category }}</td>
+                            <td>{{ category.book_category_desc }}</td>
+                            <td>
+                                <div class="btn-icon-list">
+                                    <button class="btn btn-danger btn-icon btn-sm"
+                                        onClick="deleteCategory({{ category.book_category_id }})">
+                                        <i class=" typcn typcn-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div><!-- card-body -->
+    </div>
+
+
+    <div class="az-footer mg-t-auto">
+        <div class="container">
+            <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © LMS</span>
+            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"><a href="https://juancoder.com"
+                    target="_blank">Juancode IT Solutions</a></span>
+        </div><!-- container -->
+    </div><!-- az-footer -->
+</div><!-- az-content-body -->
+
+
+<div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalTitle" aria-hidden="true"
+    style="display: none;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCategoryModalTitle">Add Category</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="feather feather-x">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <form method="POST">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label>Category <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="category" required autocomplete="off" />
+                            </div>
+                            <div class="form-group">
+                                <label>Description</label>
+                                <input type="text" class="form-control" name="desc" autocomplete="off" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light-secondary" data-dismiss="modal">
+                        <i class="bx bx-x d-block d-sm-none"></i>
+                        <span class="d-none d-sm-block">Close</span>
+                    </button>
+
+                    <button type="submit" class="btn btn-dark ml-1">
+                        <i class=" bx bx-check d-block d-sm-none"></i>
+                        <span class="d-none d-sm-block">Save changes</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function() {
+        $("#table1").DataTable();
+    });
+
+    function deleteCategory(categoryId) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Are you sure you want to delete this item?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonClass: "btn-danger",
+            confirmButtonText: "Yes, delete!",
+            cancelButtonText: "No, cancel!",
+        }).then(function(result) {
+            if (result.value) {
+                fetch("/books/category/destroy", {
+                    method: "POST",
+                    body: JSON.stringify({ categoryId: categoryId })
+                }).then((_res) => {
+                    window.location.href = "/books/categories";
+                });
+            }
+        });
+    }
+</script>
+<script src="{{ url_for('static', filename='assets/lib/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+{% endblock %}
