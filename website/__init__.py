@@ -2,12 +2,17 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 # from os import path
 from flask_login import LoginManager
+from werkzeug.utils import secure_filename
 
 db = SQLAlchemy()
+
+UPLOAD_FOLDER = 'website/static/uploads/cover_images/'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'hjshjhdjah kjshkjdhjs'
+    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
     # NOTE: if password is present : 'mysql://user:password@host/database'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root@localhost/lms'
@@ -20,7 +25,7 @@ def create_app():
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
 
-    from .models import User, Student, Category, AutismPrediction
+    from .models import User, Books, Category
 
     # this will create the models schema
     # create_database(app)

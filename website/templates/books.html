@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+{% block title %}Book Categories{% endblock %}
+
+{% block content %}
+<style>
+    div#table1_filter {
+        float: right;
+    }
+</style>
+<div class="az-content-body pd-lg d-flex flex-column">
+    <div class="az-content-breadcrumb">
+        <span>Dashboard</span>
+        <span>Masterdata</span>
+        <span>Books</span>
+    </div>
+    <h2 class="az-content-title">Books</h2>
+
+
+    {% include "response.html" %}
+
+    <div class="card card-dashboard-five mb-3">
+        <div class="card-header">
+            <div class="row row-xs">
+                <div class="col-sm-2">
+                    <a class="btn btn-dark btn-with-icon" data-toggle="modal" data-target="#addBooksModal">
+                        <i class="typcn typcn-plus"></i> Add Books
+                    </a>
+                </div>
+            </div>
+        </div><!-- card-header -->
+        <div class="card-body row row-sm">
+            <div class="table-responsive">
+                <table class="table table-bordered mg-b-0" id="table1">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th class="text-center">Cover</th>
+                            <th>Books</th>
+                            <th>Category</th>
+                            <th>ISBN</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for book in books %}
+                        <tr>
+                            <td style="width: 15px;">{{ loop.index }}</td>
+                            <td style="width: 100px; text-align: center;">
+                                {% if book.book_cover_img == "" %}
+                                <img src="{{ url_for('static', filename='assets/img/default_book_cover.jpg') }}"
+                                    style="height: 120px; width: 80px; object-fit: cover;">
+                                {% else %}
+                                <img src="{{ book.book_cover_img }}"
+                                    style="height: 120px; width: 80px; object-fit: cover;">
+                                {% endif %}
+                            </td>
+                            <td>{{ book.book_title }}</td>
+                            <td>{{ book.category.book_category }}</td>
+                            <td>{{ book.book_isbn }}</td>
+                            <td>
+                                <div class="btn-icon-list">
+                                    <button class="btn btn-danger btn-icon btn-sm"
+                                        onClick="deleteBook({{ book.book_id }})">
+                                        <i class=" typcn typcn-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div><!-- card-body -->
+    </div>
+
+
+    <div class="az-footer mg-t-auto">
+        <div class="container">
+            <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © LMS</span>
+            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"><a href="https://juancoder.com"
+                    target="_blank">Juancode IT Solutions</a></span>
+        </div><!-- container -->
+    </div><!-- az-footer -->
+</div><!-- az-content-body -->
+
+
+<div class="modal fade" id="addBooksModal" tabindex="-1" aria-labelledby="addBooksModalTitle" aria-hidden="true"
+    style="display: none;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addBooksModalTitle">Add Book</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="feather feather-x">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <form method="POST" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label>Title <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="title" required autocomplete="off" />
+                            </div>
+                            <div class="form-group">
+                                <label>Author <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="author" required autocomplete="off" />
+                            </div>
+                            <div class="form-group">
+                                <label>Publisher Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="publisher_name" required
+                                    autocomplete="off" />
+                            </div>
+                            <div class="form-group">
+                                <label>Category <span class="text-danger">*</span></label>
+                                <select class="form-control" name="category" required>
+                                    <option label="Choose one"></option>
+                                    {% for category in categories %}
+                                    <option value="{{ category.book_category_id }}">{{ category.book_category }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>ISBN <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="isbn" required autocomplete="off" />
+                            </div>
+                            <div class="form-group">
+                                <label>Year Published <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="year_published" required
+                                    autocomplete="off" />
+                            </div>
+                            <div class="form-group">
+                                <label>QTY <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="quantity" required autocomplete="off" />
+                            </div>
+                            <div class="form-group">
+                                <label>Price <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="price" required autocomplete="off" />
+                            </div>
+                            <div class="form-group">
+                                <label>Cover Image </label>
+                                <input type="file" class="form-control" name="cover_image" />
+                            </div>
+                            <div class="form-group">
+                                <label>Location <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="location" required autocomplete="off" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light-secondary" data-dismiss="modal">
+                        <i class="bx bx-x d-block d-sm-none"></i>
+                        <span class="d-none d-sm-block">Close</span>
+                    </button>
+
+                    <button type="submit" class="btn btn-dark ml-1">
+                        <i class=" bx bx-check d-block d-sm-none"></i>
+                        <span class="d-none d-sm-block">Save changes</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function() {
+        $("#table1").DataTable();
+    });
+
+    function deleteBook(bookId) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Are you sure you want to delete this item?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonClass: "btn-danger",
+            confirmButtonText: "Yes, delete!",
+            cancelButtonText: "No, cancel!",
+        }).then(function(result) {
+            if (result.value) {
+                fetch("/books/destroy", {
+                    method: "POST",
+                    body: JSON.stringify({ bookId: bookId })
+                })
+                    .then(data => data.json())
+                    .then(json => {
+                        window.location.href = "/books";
+                    });
+            }
+        });
+    }
+</script>
+
+<script src="{{ url_for('static', filename='assets/lib/datatables.net-bs/js/jquery.dataTables.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/lib/datatables.net-bs/js/dataTables.bootstrap4.min.js') }}"></script>
+{% endblock %}

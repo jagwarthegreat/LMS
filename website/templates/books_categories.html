@@ -2,7 +2,11 @@
 {% block title %}Book Categories{% endblock %}
 
 {% block content %}
-
+<style>
+    div#table1_filter {
+        float: right;
+    }
+</style>
 <div class="az-content-body pd-lg d-flex flex-column">
     <div class="az-content-breadcrumb">
         <span>Dashboard</span>
@@ -140,5 +144,7 @@
         });
     }
 </script>
-<script src="{{ url_for('static', filename='assets/lib/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+
+<script src="{{ url_for('static', filename='assets/lib/datatables.net-bs/js/jquery.dataTables.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/lib/datatables.net-bs/js/dataTables.bootstrap4.min.js') }}"></script>
 {% endblock %}

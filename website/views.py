@@ -1,9 +1,11 @@
 from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for
 from flask_login import login_required, current_user
-from .models import User, Student, Category, AutismPrediction
-from . import db
+from .models import User, Books, Category
+from . import db, ALLOWED_EXTENSIONS, UPLOAD_FOLDER
 import json
 from sqlalchemy import desc
+from werkzeug.utils import secure_filename
+import os
 
 views = Blueprint('views', __name__)
 
@@ -31,69 +33,66 @@ def booksCategories():
     categories = Category.query.all()
     return render_template("books_categories.html", user=current_user, categories=categories)
 
-# @views.route('/asd/prediction', methods=['GET', 'POST'])
-# @login_required
-# def asd_prediction():
-#     if request.method == 'POST':
-#         student = request.form.get('student')
-#         sign = request.form.get('p_sign')
-#         status = request.form.get('status')
+@views.route('/books', methods=['GET', 'POST'])
+@login_required
+def books():
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'cover_image' not in request.files:
+            flash('No selected file')
+            return redirect(url_for('views.books'))
 
-#         predict = AutismPrediction(autism_sign_id=sign, student_id=student, status=status)
-#         db.session.add(predict)
-#         db.session.commit()
+        title = request.form.get('title')
+        author = request.form.get('author')
+        publisher_name = request.form.get('publisher_name')
+        category = request.form.get('category')
+        isbn = request.form.get('isbn')
+        year_publish = request.form.get('year_published')
+        qty = request.form.get('quantity')
+        price = request.form.get('price')
+        file = request.files['cover_image']
+        location = request.form.get('location')
 
-#         flash('Predicition added!', category='success')
-#         return redirect(url_for('views.asd_prediction'))
+        # if file.filename == '':
+        #     flash('No selected file')
+        #     return redirect(url_for('views.books'))
+        filePath = ""
+        covr_file = ""
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            filePath = os.path.join(UPLOAD_FOLDER, filename)
+            file.save(filePath)
 
-#     students = Student.query.all()
-#     signs = Category.query.all()
-#     predictions = AutismPrediction.query.order_by(desc(AutismPrediction.ap_id)).all()
-#     return render_template("asd_prediction.html", user=current_user, students=students, signs=signs, predictions=predictions)
+            covr_file = filePath.replace("website", '')
 
-# @views.route('/student', methods=['GET', 'POST'])
-# @login_required
-# def student():
-#     if request.method == 'POST':
-#         fname = request.form.get('first_name')
-#         mname = request.form.get('middle_name')
-#         lname = request.form.get('last_name')
-#         year = request.form.get('year')
-#         section = request.form.get('section')
-#         address = request.form.get('address')
-#         contact = request.form.get('contact')
+        # add to database
+        book = Books(book_title=title, book_author=author, book_publisher_name=publisher_name, book_category_id=category, book_isbn=isbn, book_year_published=year_publish, book_qty=qty, book_price=price, book_cover_img=covr_file, book_location=location)
+        db.session.add(book)
+        db.session.commit()
 
-#         student = Student(student_fname=fname, student_mname=mname, student_lname=lname, student_year=year, student_section=section, student_address=address, student_contact_number=contact)
-#         db.session.add(student)
-#         db.session.commit()
+        flash('Book added!', category='success')
+        return redirect(url_for('views.books'))
 
-#         flash('Student added!', category='success')
-#         return redirect(url_for('views.student'))
+    categories = Category.query.all()
+    books = Books.query.all()
+    return render_template("books.html", user=current_user, categories=categories, books=books)
 
-#     students = Student.query.all()
-#     return render_template("student.html", user=current_user, students=students)
+@views.route('/books/destroy', methods=['POST'])
+@login_required
+def delete_book():
+    requestData = json.loads(request.data)
+    requestID = requestData['bookId'] 
+    bookdata = Books.query.get(requestID)
 
-# @views.route('/asd/signs/destroy', methods=['POST'])
-# @login_required
-# def delete_asd_sign():
-#     requestData = json.loads(request.data)
-#     requestID = requestData['signId'] 
-#     asdsign = Category.query.get(requestID)
-#     db.session.delete(asdsign)
-#     db.session.commit()
+    if(bookdata.book_cover_img is not None):
+        if os.path.exists(bookdata.book_cover_img):
+            test = os.remove(bookdata.book_cover_img)
 
-#     return jsonify({})
+    db.session.delete(bookdata)
+    db.session.commit()
 
-# @views.route('/asd/prediction/destroy', methods=['POST'])
-# @login_required
-# def delete_asd_prediction():
-#     requestData = json.loads(request.data)
-#     requestID = requestData['predictId'] 
-#     asdpredict = AutismPrediction.query.get(requestID)
-#     db.session.delete(asdpredict)
-#     db.session.commit()
-
-#     return jsonify({})
+    flash('Book deleted', category="success")
+    return jsonify({ "delete_response": "deleted" })
 
 @views.route('/books/category/destroy', methods=['POST'])
 @login_required
@@ -105,3 +104,7 @@ def delete_category():
     db.session.commit()
 
     return jsonify({})
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
