@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for
 from flask_login import login_required, current_user
-from .models import User, Books, Category
+from .models import User, Books, Category, BorrowedBooks, BorrowedBooksDetail
 from . import db, ALLOWED_EXTENSIONS, UPLOAD_FOLDER
 import json
 from sqlalchemy import desc
@@ -77,6 +77,25 @@ def books():
     books = Books.query.all()
     return render_template("books.html", user=current_user, categories=categories, books=books)
 
+@views.route('/books/borrow', methods=['GET', 'POST'])
+@login_required
+def booksBorrow():
+    # if request.method == 'POST':
+    #     category = request.form.get('category')
+    #     desc = request.form.get('desc')
+
+    #     catValues = Category(book_category=category, book_category_desc=desc)
+    #     db.session.add(catValues)
+    #     db.session.commit()
+
+    #     flash('Book Category added!', category='success')
+    #     return redirect(url_for('views.booksCategories'))
+
+    users = User.query.all()
+    borrowedBooks = BorrowedBooks.query.all()
+    books = Books.query.all()
+    return render_template("books_borrow.html", user=current_user, borrowedBooks=borrowedBooks, users=users, books=books)
+
 @views.route('/books/destroy', methods=['POST'])
 @login_required
 def delete_book():
@@ -104,6 +123,67 @@ def delete_category():
     db.session.commit()
 
     return jsonify({})
+
+@views.route('/books/borrow/store', methods=['POST'])
+@login_required
+def borrow_store():
+    requestData = json.loads(request.data)
+    borrower_id = requestData['borrower'] 
+    date_borrowed = requestData['date_borrowed']
+
+    try:
+        borrow_insert = BorrowedBooks(user_id=borrower_id, status="S", date_borrowed=date_borrowed)
+        db.session.add(borrow_insert)
+        db.session.commit()
+        last_id = borrow_insert.borrow_id
+    except Exception as e:
+        last_id = 0
+
+    return jsonify({ "header_id": last_id })
+
+@views.route('/books/borrow/detail/store', methods=['POST'])
+@login_required
+def borrow_detail_store():
+    requestData = json.loads(request.data)
+    selected_book_id = requestData['selected_book_id'] 
+    book_qty = requestData['book_qty']
+    borrow_header_id = requestData['borrow_header_id']
+
+    try:
+        detail_insert = BorrowedBooksDetail(borrow_id=borrow_header_id, book_id=selected_book_id, qty=book_qty)
+        db.session.add(detail_insert)
+        db.session.commit()
+        response = 1
+    except Exception as e:
+        response = e
+
+    return jsonify({ "response": response })
+
+@views.route('/books/borrow/detail/data', methods=['GET'])
+@login_required
+def borrow_detail_data():
+    #requestData = json.loads(request.data)
+    borrow_id = 12
+    #requestData['id']
+
+    data = []
+    borrow_details = BorrowedBooksDetail.query.filter_by(borrow_id=borrow_id).all()
+    for row in borrow_details:
+
+        data.append({
+                "count": 1,
+                "borrow_id":row.borrow_id,
+                "book": row.book.book_title,
+                "qty": row.qty             
+            })
+
+    response = {"data ": data}
+        
+    #return json.dumps(response);
+    # return {"book": "Book 3","borrow_id": 12,"count": 1,"qty": "1"}
+    return jsonify(data)
+    # return jsonify({ "data": [ { "count": 1 } ] })
+
 
 def allowed_file(filename):
     return '.' in filename and \

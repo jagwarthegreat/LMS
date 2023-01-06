@@ -35,11 +35,23 @@ class Category(db.Model):
     book_category_desc = db.Column(db.Text(), nullable=True)
     date_added = db.Column(db.DateTime(timezone=True), default=func.now())
 
-# class AutismPrediction(db.Model):
-#     __tablename__ = 'tbl_autism_predictions'
-#     ap_id = db.Column(db.Integer, primary_key=True)
-#     autism_sign_id = db.Column(db.Integer, db.ForeignKey('tbl_autism_signs.autism_sign_id'))
-#     student_id = db.Column(db.Integer, db.ForeignKey('tbl_students.student_id'))
-#     status = db.Column(db.String(50), nullable=True)
-#     date_added = db.Column(db.DateTime(timezone=True), default=func.now())
-#     student = db.relationship('Student')
+class BorrowedBooks(db.Model):
+    __tablename__ = 'tbl_borrowed_books'
+    borrow_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('tbl_user.id'))
+    status = db.Column(db.String(1), nullable=True)
+    date_borrowed = db.Column(db.DateTime(timezone=True))
+    date_added = db.Column(db.DateTime(timezone=True), default=func.now())
+    user = db.relationship('User')
+
+class BorrowedBooksDetail(db.Model):
+    __tablename__ = 'tbl_borrowed_books_details'
+    borrow_detail_id = db.Column(db.Integer, primary_key=True)
+    borrow_id = db.Column(db.Integer, db.ForeignKey('tbl_borrowed_books.borrow_id'))
+    book_id = db.Column(db.Integer, db.ForeignKey('tbl_books.book_id'))
+    qty = db.Column(db.String(10), nullable=True)
+    qty_returned = db.Column(db.String(10), nullable=True)
+    date_returned = db.Column(db.DateTime(timezone=True), nullable=True)
+    date_added = db.Column(db.DateTime(timezone=True), default=func.now())
+    borrowedBook = db.relationship('BorrowedBooks')
+    book = db.relationship('Books')
