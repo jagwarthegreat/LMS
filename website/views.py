@@ -159,31 +159,41 @@ def borrow_detail_store():
 
     return jsonify({ "response": response })
 
-@views.route('/books/borrow/detail/data', methods=['GET'])
+@views.route('/books/borrow/detail/data', methods=['GET', 'POST'])
 @login_required
 def borrow_detail_data():
-    #requestData = json.loads(request.data)
-    borrow_id = 12
-    #requestData['id']
+    borrowId = request.form.get('borrowId')
 
+    count=0
     data = []
-    borrow_details = BorrowedBooksDetail.query.filter_by(borrow_id=borrow_id).all()
+    borrow_details = BorrowedBooksDetail.query.filter_by(borrow_id=borrowId).all()
     for row in borrow_details:
-
+        count += 1
         data.append({
-                "count": 1,
-                "borrow_id":row.borrow_id,
-                "book": row.book.book_title,
-                "qty": row.qty             
-            })
+            "count": count,
+            "borrow_id":row.borrow_id,
+            "book": row.book.book_title,
+            "qty": row.qty,
+            "action": ""
+        })
 
-    response = {"data ": data}
-        
-    #return json.dumps(response);
-    # return {"book": "Book 3","borrow_id": 12,"count": 1,"qty": "1"}
-    return jsonify(data)
-    # return jsonify({ "data": [ { "count": 1 } ] })
+    response = {"data": data}
+    return jsonify(response)
 
+@views.route('/books/borrow/detail/edit', methods=['POST'])
+@login_required
+def borrow_detail_edit():
+    requestData = json.loads(request.data)
+    borrowId = requestData['id'] 
+
+    borrow_details = BorrowedBooks.query.filter_by(borrow_id=borrowId).first()
+    data = {
+        "user_id": borrow_details.user_id,
+        "status":borrow_details.status,
+        "date_borrowed": borrow_details.date_borrowed      
+    }
+
+    return jsonify({ "data": data })
 
 def allowed_file(filename):
     return '.' in filename and \
