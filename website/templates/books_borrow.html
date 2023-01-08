@@ -12,7 +12,7 @@
         height: 25px;
     }
 
-    .dataTable{
+    .dataTable {
         width: 100% !important;
     }
 </style>
@@ -49,29 +49,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for borrowedBook in borrowedBooks %}
-                        <tr>
-                            <td>{{ loop.index }}</td>
-                            <td>
-                                {{ borrowedBook.user.fname +" "+ borrowedBook.user.mname +" "+ borrowedBook.user.lname
-                                }}
-                            </td>
-                            <td>{{ borrowedBook.date_borrowed }}</td>
-                            <td>{{ borrowedBook.status }}</td>
-                            <td>
-                                <div class="btn-icon-list">
-                                    <button class="btn btn-danger btn-icon btn-sm"
-                                        onClick="deleteBorrowedBook({{ borrowedBook.borrow_id }})">
-                                        <i class=" typcn typcn-trash"></i>
-                                    </button>
-                                    <button class="btn btn-primary btn-icon btn-sm"
-                                        onClick="borrowedBookDetail({{ borrowedBook.borrow_id }})">
-                                        <i class=" typcn typcn-edit"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
+
                     </tbody>
                 </table>
             </div>
@@ -94,7 +72,8 @@
     <div class="modal-dialog" role="document" style="max-width: 80% !important;">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addBorrowBookModalTitle">Borrow Books <span id="borrowed_status"></span></h5>
+                <h5 class="modal-title" id="addBorrowBookModalTitle">Borrow Books <span id="borrowed_status"></span>
+                </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -191,7 +170,7 @@
 <script>
     $(function() {
         $("#add_borrow_detail_section").hide();
-        $("#table1").DataTable();
+        loadBorrowData();
 
         $('.select2').select2({
             placeholder: 'Choose one',
@@ -224,7 +203,7 @@
         $("#addBorrowBookModal").modal('show')
     }
 
-    function deleteBorrowedBook(categoryId) {
+    function deleteBorrowedBook(borrowId) {
         Swal.fire({
             title: "Are you sure?",
             text: "Are you sure you want to delete this item?",
@@ -235,11 +214,11 @@
             cancelButtonText: "No, cancel!",
         }).then(function(result) {
             if (result.value) {
-                fetch("/books/category/destroy", {
+                fetch("/books/borrow/destroy", {
                     method: "POST",
-                    body: JSON.stringify({ categoryId: categoryId })
+                    body: JSON.stringify({ borrowId: borrowId })
                 }).then((_res) => {
-                    window.location.href = "/books/categories";
+                    window.location.href = "/books/borrow";
                 });
             }
         });
@@ -267,6 +246,7 @@
                     $("#save_header_btn").hide();
 
                     $("#add_borrow_detail_section").show();
+                    loadBorrowData();
                 });
         }
     }
@@ -329,6 +309,38 @@
             },
             {
                 data: 'action'
+            }
+            ]
+        });
+    }
+
+    function loadBorrowData() {
+        $('#table1').DataTable().destroy();
+        $("#table1").DataTable({
+            "paging": false,
+            "processing": true,
+            "ajax": {
+                url: "/books/borrow/data",
+                dataSrc: 'data',
+                type: 'POST',
+                serverSide: true,
+            },
+            "columns": [{
+                data: 'count'
+            },
+            {
+                data: 'borrower'
+            },
+            {
+                data: 'date_borrowed'
+            },
+            {
+                data: 'status'
+            },
+            {
+                "mRender": function(data, type, row) {
+                    return '<div class="btn-icon-list"><button class="btn btn-danger btn-icon btn-sm" onClick="deleteBorrowedBook(' + row.borrow_id + ')"><i class=" typcn typcn-trash"></i></button><button class="btn btn-primary btn-icon btn-sm" onClick="borrowedBookDetail(' + row.borrow_id + ')"><i class=" typcn typcn-edit"></i></button></div>';
+                }
             }
             ]
         });
