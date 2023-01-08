@@ -173,6 +173,7 @@ def borrow_detail_data():
         data.append({
             "count": count,
             "borrow_id":row.borrow_id,
+            "borrow_detail_id":row.borrow_detail_id,
             "book": row.book.book_title,
             "qty": row.qty,
             "action": ""
@@ -242,6 +243,17 @@ def delete_borrowed_item():
     borrow = BorrowedBooks.query.get(requestID)
 
     db.session.query(BorrowedBooksDetail).filter(BorrowedBooksDetail.borrow_id == requestID).delete(synchronize_session=False)
+    db.session.delete(borrow)
+    db.session.commit()
+
+    return jsonify({})
+
+@views.route('/books/borrow/detail/destroy', methods=['POST'])
+@login_required
+def delete_borrowed_detail_item():
+    requestData = json.loads(request.data)
+    requestID = requestData['detailId'] 
+    borrow = BorrowedBooksDetail.query.get(requestID)
     db.session.delete(borrow)
     db.session.commit()
 

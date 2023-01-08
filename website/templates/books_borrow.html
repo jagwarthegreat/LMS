@@ -308,7 +308,9 @@
                 data: 'qty'
             },
             {
-                data: 'action'
+                "mRender": function(data, type, row) {
+                    return '<div class="btn-icon-list"><button class="btn btn-danger btn-icon btn-sm" onClick="deleteBorrowedDetailItem(' + row.borrow_detail_id + ')"><i class=" typcn typcn-trash"></i></button></div>';
+                }
             }
             ]
         });
@@ -365,6 +367,28 @@
 
                 $("#addBorrowBookModal").modal('show');
             });
+    }
+
+    function deleteBorrowedDetailItem(detailId) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Are you sure you want to delete this item?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonClass: "btn-danger",
+            confirmButtonText: "Yes, delete!",
+            cancelButtonText: "No, cancel!",
+        }).then(function(result) {
+            if (result.value) {
+                fetch("/books/borrow/detail/destroy", {
+                    method: "POST",
+                    body: JSON.stringify({ detailId: detailId })
+                }).then((_res) => {
+                    var header_id = $("#borrow_header_id").val();
+                    loadBorrowDetailData(header_id);
+                });
+            }
+        });
     }
 </script>
 
