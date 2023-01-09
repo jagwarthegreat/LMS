@@ -44,19 +44,18 @@
                         <a href="" class="az-header-arrow"><i class="icon ion-md-arrow-back"></i></a>
                     </div>
                     <h6 class="az-notification-title">Notifications</h6>
-                    <p class="az-notification-text">You have 2 unread notification</p>
-                    <div class="az-notification-list">
+                    <p class="az-notification-text">You have 0 unread notification</p>
+                    <!-- <div class="az-notification-list">
                         <div class="media new">
                             <div class="az-img-user"><img
                                     src="{{ url_for('static', filename='assets/img/faces/face2.jpg') }}" alt=""></div>
                             <div class="media-body">
                                 <p>Congratulate <strong>Socrates Itumay</strong> for work anniversaries</p>
                                 <span>Mar 15 12:32pm</span>
-                            </div><!-- media-body -->
-                        </div><!-- media -->
-                        <!-- media -->
-                    </div><!-- az-notification-list -->
-                    <div class="dropdown-footer"><a href="">View All Notifications</a></div>
+                            </div>
+                        </div>
+                    </div> -->
+                    <div class="dropdown-footer"><a>View All Notifications</a></div>
                 </div><!-- dropdown-menu -->
             </div><!-- az-header-notification -->
             <div class="dropdown az-profile-menu">
@@ -74,8 +73,10 @@
                         <span>System User</span>
                     </div><!-- az-header-profile -->
 
-                    <a href="{{url_for('auth.profile')}}" class="dropdown-item"><i class="typcn typcn-user-outline"></i> Edit Profile</a>
-                    <a href="{{url_for('auth.users')}}" class="dropdown-item"><i class="typcn typcn-cog-outline"></i> Sytem Users</a>
+                    <a href="{{url_for('auth.profile')}}" class="dropdown-item"><i class="typcn typcn-user-outline"></i>
+                        Edit Profile</a>
+                    <a href="{{url_for('auth.users')}}" class="dropdown-item"><i class="typcn typcn-cog-outline"></i>
+                        Sytem Users</a>
                     <a href="{{url_for('auth.logout')}}" class="dropdown-item"><i class="typcn typcn-power-outline"></i>
                         Sign
                         Out</a>

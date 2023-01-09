@@ -156,7 +156,7 @@ def borrow_detail_store():
         db.session.commit()
         response = 1
     except Exception as e:
-        response = e
+        response = str(e)
 
     return jsonify({ "response": response })
 

@@ -18,31 +18,31 @@
     {% include "response.html" %}
 
     <div class="card card-dashboard-five mb-3">
-        <div class="card-body row row-sm">
+        <div class="card-body">
             <form class="form form-horizontal" method="POST">
                 <input type="hidden" value="{{ user.id }}" name="user_id">
                 <div class="form-body">
                     <div class="row">
-                        <div class="col-md-4">
-                            <label>First Name</label>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label>First Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="fname" id="first-name"
+                                    placeholder="First Name" value="{{ user.fname }}" required autocomplete="off" />
+                            </div>
                         </div>
-                        <div class="col-md-8 form-group">
-                            <input type="text" id="first-name" class="form-control" name="fname"
-                                placeholder="First Name" value="{{ user.fname }}">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label>Middle Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="mname" id="middle-name"
+                                    placeholder="Middle Name" value="{{ user.mname }}" required autocomplete="off" />
+                            </div>
                         </div>
-                        <div class="col-md-4">
-                            <label>Middle Name</label>
-                        </div>
-                        <div class="col-md-8 form-group">
-                            <input type="text" id="middle-name" class="form-control" name="mname"
-                                placeholder="Middle Name" value="{{ user.mname }}">
-                        </div>
-                        <div class="col-md-4">
-                            <label>Last Name</label>
-                        </div>
-                        <div class="col-md-8 form-group">
-                            <input type="text" id="last-name" class="form-control" name="lname"
-                                placeholder="Last Name" value="{{ user.lname }}">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label>Last Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="lname" id="last-name"
+                                    placeholder="Last Name" value="{{ user.lname }}" required autocomplete="off" />
+                            </div>
                         </div>
                         <div class="col-sm-12 d-flex justify-content-end">
                             <button type="submit" class="btn btn-primary me-1 mb-1">Save Changes</button>
