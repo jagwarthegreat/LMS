@@ -10,6 +10,7 @@ class User(db.Model, UserMixin):
     lname = db.Column(db.String(150))
     username = db.Column(db.String(150), unique=True)
     password = db.Column(db.String(150))
+    category = db.Column(db.String(150))
     date_added = db.Column(db.DateTime(timezone=True), default=func.now())
 
 class Books(db.Model):

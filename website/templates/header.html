@@ -28,7 +28,7 @@
                             <div>
                                 <nav class="nav">
                                     <a href="{{url_for('views.booksBorrow')}}" class="nav-link">Borrow Books</a>
-                                    <a href="{{url_for('views.booksBorrow')}}" class="nav-link">Return Books</a>
+                                    <!-- <a href="{{url_for('views.booksBorrow')}}" class="nav-link">Return Books</a> -->
                                 </nav>
                             </div>
                         </div><!-- container -->
@@ -74,8 +74,8 @@
                         <span>System User</span>
                     </div><!-- az-header-profile -->
 
-                    <a href="" class="dropdown-item"><i class="typcn typcn-user-outline"></i> Edit Profile</a>
-                    <a href="" class="dropdown-item"><i class="typcn typcn-cog-outline"></i> Sytem Users</a>
+                    <a href="{{url_for('auth.profile')}}" class="dropdown-item"><i class="typcn typcn-user-outline"></i> Edit Profile</a>
+                    <a href="{{url_for('auth.users')}}" class="dropdown-item"><i class="typcn typcn-cog-outline"></i> Sytem Users</a>
                     <a href="{{url_for('auth.logout')}}" class="dropdown-item"><i class="typcn typcn-power-outline"></i>
                         Sign
                         Out</a>

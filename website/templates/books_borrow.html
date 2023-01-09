@@ -11,6 +11,10 @@
         width: 26px;
         height: 25px;
     }
+
+    .dataTable {
+        width: 100% !important;
+    }
 </style>
 <div class="az-content-body pd-lg d-flex flex-column">
     <div class="az-content-breadcrumb">
@@ -26,7 +30,7 @@
         <div class="card-header">
             <div class="row row-xs">
                 <div class="col-sm-2">
-                    <a class="btn btn-dark btn-with-icon" data-toggle="modal" data-target="#addBorrowBookModal">
+                    <a class="btn btn-dark btn-with-icon" onclick="addBorrowBookModal()">
                         <i class="typcn typcn-plus"></i> Borrow a Book
                     </a>
                 </div>
@@ -45,25 +49,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for borrowedBook in borrowedBooks %}
-                        <tr>
-                            <td>{{ loop.index }}</td>
-                            <td>
-                                {{ borrowedBook.user.fname +" "+ borrowedBook.user.mname +" "+ borrowedBook.user.lname
-                                }}
-                            </td>
-                            <td>{{ borrowedBook.date_borrowed }}</td>
-                            <td>{{ borrowedBook.status }}</td>
-                            <td>
-                                <div class="btn-icon-list">
-                                    <button class="btn btn-danger btn-icon btn-sm"
-                                        onClick="deleteBorrowedBook({{ borrowedBook.borrow_id }})">
-                                        <i class=" typcn typcn-trash"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
+
                     </tbody>
                 </table>
             </div>
@@ -86,7 +72,8 @@
     <div class="modal-dialog" role="document" style="max-width: 80% !important;">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addBorrowBookModalTitle">Borrow Books (Saved)</h5>
+                <h5 class="modal-title" id="addBorrowBookModalTitle">Borrow Books <span id="borrowed_status"></span>
+                </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -183,7 +170,7 @@
 <script>
     $(function() {
         $("#add_borrow_detail_section").hide();
-        $("#table1").DataTable();
+        loadBorrowData();
 
         $('.select2').select2({
             placeholder: 'Choose one',
@@ -196,7 +183,27 @@
         });
     });
 
-    function deleteBorrowedBook(categoryId) {
+    function addBorrowBookModal() {
+        $("#borrower").val("");
+        $("#date_borrowed").val("");
+        $("#selected_book").val("");
+        $("#book_qty").val("");
+        $("#borrow_header_id").val("");
+
+        $("#borrower").prop("disabled", false);
+        $("#date_borrowed").prop("disabled", false);
+        $("#save_header_btn").show();
+        $("#add_borrow_detail_section").hide();
+
+        // loadBorrowDetailData(0);
+        $('#table2').DataTable().clear();
+        $('#table2').DataTable().destroy();
+        // $("#table2").DataTable({"paging": false});
+
+        $("#addBorrowBookModal").modal('show')
+    }
+
+    function deleteBorrowedBook(borrowId) {
         Swal.fire({
             title: "Are you sure?",
             text: "Are you sure you want to delete this item?",
@@ -207,11 +214,11 @@
             cancelButtonText: "No, cancel!",
         }).then(function(result) {
             if (result.value) {
-                fetch("/books/category/destroy", {
+                fetch("/books/borrow/destroy", {
                     method: "POST",
-                    body: JSON.stringify({ categoryId: categoryId })
+                    body: JSON.stringify({ borrowId: borrowId })
                 }).then((_res) => {
-                    window.location.href = "/books/categories";
+                    window.location.href = "/books/borrow";
                 });
             }
         });
@@ -233,19 +240,13 @@
             })
                 .then(data => data.json())
                 .then(json => {
-                    // window.location.href = "/books";
-                    alert(json.header_id);
-                    console.log(json);
-
                     $("#borrow_header_id").val(json.header_id);
                     $("#borrower").prop("disabled", true);
                     $("#date_borrowed").prop("disabled", true);
                     $("#save_header_btn").hide();
 
-                    // select_book
-                    // book_qty
-                    // add_book_btn
                     $("#add_borrow_detail_section").show();
+                    loadBorrowData();
                 });
         }
     }
@@ -254,8 +255,6 @@
         var selected_book_id = $("#selected_book").val();
         var book_qty = $("#book_qty").val();
         var borrow_header_id = $("#borrow_header_id").val();
-
-        console.log(selected_book_id + " : " + book_qty + " : " + borrow_header_id);
 
         if (selected_book_id == '' || book_qty == '') {
             Swal.fire(
@@ -271,9 +270,6 @@
                 .then(data => data.json())
                 .then(json => {
                     // window.location.href = "/books";
-                    alert(json.header_id);
-                    console.log(json);
-
                     if (json.response == 1) {
                         // refresh the table
                         loadBorrowDetailData(borrow_header_id);
@@ -284,55 +280,115 @@
                             'danger'
                         )
                     }
-
-                    // $("#borrower").prop("disabled", true);
-                    // $("#date_borrowed").prop("disabled", true);
-                    // $("#header-btn").hide();
-                    // $("#add_borrow_detail_section").show();
                 });
         }
     }
 
     function loadBorrowDetailData(id) {
-        $('#table2').DataTable({
+        $('#table2').DataTable().destroy();
+        $("#table2").DataTable({
+            "paging": false,
             "processing": true,
-            "ajax": "/books/borrow/detail/data",
-            // add column definitions to map your json to the table
-            "columns": [
-                { data: "book" },
-                { data: "borrow_id" },
-                { data: "count" },
-                { data: "qty" },
+            "ajax": {
+                url: "/books/borrow/detail/data",
+                dataSrc: 'data',
+                type: 'POST',
+                data: {
+                    borrowId: id
+                },
+                serverSide: true,
+            },
+            "columns": [{
+                data: 'count'
+            },
+            {
+                data: 'book'
+            },
+            {
+                data: 'qty'
+            },
+            {
+                "mRender": function(data, type, row) {
+                    return '<div class="btn-icon-list"><button class="btn btn-danger btn-icon btn-sm" onClick="deleteBorrowedDetailItem(' + row.borrow_detail_id + ')"><i class=" typcn typcn-trash"></i></button></div>';
+                }
+            }
             ]
         });
+    }
 
-        // $('#table2').DataTable().destroy();
-        // $("#table2").DataTable({
-        //     "paging": false,
-        //     "processing": true,
-        //     "ajax": {
-        //         url: "/books/borrow/detail/data",
-        //         dataSrc: '',
-        //         type: 'POST',
-        //         data: {
-        //             id: id
-        //         },
-        //         serverSide: true,
-        //     },
-        //     "columns": [{
-        //         data: 'book'
-        //     },
-        //     {
-        //         data: 'borrow_id'
-        //     },
-        //     {
-        //         data: 'count'
-        //     },
-        //     {
-        //         data: 'qty'
-        //     }
-        //     ]
-        // });
+    function loadBorrowData() {
+        $('#table1').DataTable().destroy();
+        $("#table1").DataTable({
+            "paging": false,
+            "processing": true,
+            "ajax": {
+                url: "/books/borrow/data",
+                dataSrc: 'data',
+                type: 'POST',
+                serverSide: true,
+            },
+            "columns": [{
+                data: 'count'
+            },
+            {
+                data: 'borrower'
+            },
+            {
+                data: 'date_borrowed'
+            },
+            {
+                data: 'status'
+            },
+            {
+                "mRender": function(data, type, row) {
+                    return '<div class="btn-icon-list"><button class="btn btn-danger btn-icon btn-sm" onClick="deleteBorrowedBook(' + row.borrow_id + ')"><i class=" typcn typcn-trash"></i></button><button class="btn btn-primary btn-icon btn-sm" onClick="borrowedBookDetail(' + row.borrow_id + ')"><i class=" typcn typcn-edit"></i></button></div>';
+                }
+            }
+            ]
+        });
+    }
+
+    function borrowedBookDetail(id) {
+        loadBorrowDetailData(id);
+        fetch("/books/borrow/detail/edit", {
+            method: "POST",
+            body: JSON.stringify({ id: id })
+        })
+            .then(data => data.json())
+            .then(json => {
+                $("#borrower").val(json.data.user_id);
+                $("#date_borrowed").val(json.data.date_borrowed);
+                $("#borrowed_status").html("(" + json.data.status + ")");
+                $("#borrow_header_id").val(id);
+                $("#borrower").prop("disabled", true);
+                $("#date_borrowed").prop("disabled", true);
+                $("#save_header_btn").hide();
+                $("#add_borrow_detail_section").show();
+
+                $("#addBorrowBookModal").modal('show');
+            });
+    }
+
+    function deleteBorrowedDetailItem(detailId) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Are you sure you want to delete this item?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonClass: "btn-danger",
+            confirmButtonText: "Yes, delete!",
+            cancelButtonText: "No, cancel!",
+        }).then(function(result) {
+            if (result.value) {
+                fetch("/books/borrow/detail/destroy", {
+                    method: "POST",
+                    body: JSON.stringify({ detailId: detailId })
+                }).then((_res) => {
+                    var header_id = $("#borrow_header_id").val();
+                    loadBorrowDetailData(header_id);
+                });
+            }
+        });
     }
 </script>
 

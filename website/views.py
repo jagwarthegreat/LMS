@@ -5,6 +5,7 @@ from . import db, ALLOWED_EXTENSIONS, UPLOAD_FOLDER
 import json
 from sqlalchemy import desc
 from werkzeug.utils import secure_filename
+from datetime import datetime
 import os
 
 views = Blueprint('views', __name__)
@@ -159,31 +160,104 @@ def borrow_detail_store():
 
     return jsonify({ "response": response })
 
-@views.route('/books/borrow/detail/data', methods=['GET'])
+@views.route('/books/borrow/detail/data', methods=['GET', 'POST'])
 @login_required
 def borrow_detail_data():
-    #requestData = json.loads(request.data)
-    borrow_id = 12
-    #requestData['id']
+    borrowId = request.form.get('borrowId')
 
+    count=0
     data = []
-    borrow_details = BorrowedBooksDetail.query.filter_by(borrow_id=borrow_id).all()
+    borrow_details = BorrowedBooksDetail.query.filter_by(borrow_id=borrowId).all()
     for row in borrow_details:
+        count += 1
+        data.append({
+            "count": count,
+            "borrow_id":row.borrow_id,
+            "borrow_detail_id":row.borrow_detail_id,
+            "book": row.book.book_title,
+            "qty": row.qty,
+            "action": ""
+        })
+
+    response = {"data": data}
+    return jsonify(response)
+
+@views.route('/books/borrow/data', methods=['GET', 'POST'])
+@login_required
+def borrow_data():
+    # borrowId = request.form.get('borrowId')
+
+    count=0
+    data = []
+    borrow_data = BorrowedBooks.query.filter_by().all()
+    for row in borrow_data:
+        count += 1
+
+        if row.status == "B":
+            status = "Borrowed"
+        elif row.status == "R":
+            status = "Returned"
+        else:
+            status = "Saved"
 
         data.append({
-                "count": 1,
-                "borrow_id":row.borrow_id,
-                "book": row.book.book_title,
-                "qty": row.qty             
-            })
+            "count": count,
+            "borrow_id": row.borrow_id,
+            "borrower":row.user.fname +" "+ row.user.mname +" "+ row.user.lname,
+            "date_borrowed": row.date_borrowed.strftime("%Y-%m-%d"),
+            "status": status,
+            "action": ""
+        })
 
-    response = {"data ": data}
-        
-    #return json.dumps(response);
-    # return {"book": "Book 3","borrow_id": 12,"count": 1,"qty": "1"}
-    return jsonify(data)
-    # return jsonify({ "data": [ { "count": 1 } ] })
+    response = {"data": data}
+    return jsonify(response)
 
+@views.route('/books/borrow/detail/edit', methods=['POST'])
+@login_required
+def borrow_detail_edit():
+    requestData = json.loads(request.data)
+    borrowId = requestData['id'] 
+
+    borrow_details = BorrowedBooks.query.filter_by(borrow_id=borrowId).first()
+
+    if borrow_details.status == "B":
+        status = "Borrowed"
+    elif borrow_details.status == "R":
+        status = "Returned"
+    else:
+        status = "Saved"
+
+    data = {
+        "user_id": borrow_details.user_id,
+        "status": status,
+        "date_borrowed": borrow_details.date_borrowed.strftime("%Y-%m-%d")
+    }
+
+    return jsonify({ "data": data })
+
+@views.route('/books/borrow/destroy', methods=['POST'])
+@login_required
+def delete_borrowed_item():
+    requestData = json.loads(request.data)
+    requestID = requestData['borrowId'] 
+    borrow = BorrowedBooks.query.get(requestID)
+
+    db.session.query(BorrowedBooksDetail).filter(BorrowedBooksDetail.borrow_id == requestID).delete(synchronize_session=False)
+    db.session.delete(borrow)
+    db.session.commit()
+
+    return jsonify({})
+
+@views.route('/books/borrow/detail/destroy', methods=['POST'])
+@login_required
+def delete_borrowed_detail_item():
+    requestData = json.loads(request.data)
+    requestID = requestData['detailId'] 
+    borrow = BorrowedBooksDetail.query.get(requestID)
+    db.session.delete(borrow)
+    db.session.commit()
+
+    return jsonify({})
 
 def allowed_file(filename):
     return '.' in filename and \

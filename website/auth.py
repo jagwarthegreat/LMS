@@ -62,6 +62,7 @@ def users():
         first_name = request.form.get('first_name')
         middle_name = request.form.get('middle_name')
         last_name = request.form.get('last_name')
+        category = request.form.get('category')
         username = request.form.get('username')
         password = request.form.get('password')
 
@@ -70,7 +71,7 @@ def users():
             flash('Username already exists.', category='error')
         else:
             new_user = User(fname=first_name, mname=middle_name, lname=last_name, username=username, password=generate_password_hash(
-                password, method='sha256'))
+                password, method='sha256'), category=category)
             db.session.add(new_user)
             db.session.commit()
             # login_user(new_user, remember=True)

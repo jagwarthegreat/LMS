@@ -2,65 +2,64 @@
 {% block title %}Profile{% endblock %}
 
 {% block content %}
-{% include "response.html" %}
-<div class="page-title">
-    <div class="row">
-        <div class="col-12 col-md-6 order-md-1 order-last">
-            <h3>Profile</h3>
-            <!-- <p class="text-subtitle text-muted">Navbar will appear on the top of the page.</p> -->
-        </div>
-        <div class="col-12 col-md-6 order-md-2 order-first">
-            <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{url_for('views.home')}}">Dashboard</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Profile Page
-                    </li>
-                </ol>
-            </nav>
-        </div>
+<style>
+    div#table1_filter {
+        float: right;
+    }
+</style>
+<div class="az-content-body pd-lg d-flex flex-column">
+    <div class="az-content-breadcrumb">
+        <span>Dashboard</span>
+        <span>Profile</span>
     </div>
-</div>
-<div class="col-md-8 col-12">
-    <div class="card">
-        <div class="card-header">
-            <h4 class="card-title">Personal Info</h4>
-        </div>
-        <div class="card-content">
-            <div class="card-body">
-                <form class="form form-horizontal" method="POST">
-                    <input type="hidden" value="{{ user.id }}" name="user_id">
-                    <div class="form-body">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <label>First Name</label>
-                            </div>
-                            <div class="col-md-8 form-group">
-                                <input type="text" id="first-name" class="form-control" name="fname"
-                                    placeholder="First Name" value="{{ user.fname }}">
-                            </div>
-                            <div class="col-md-4">
-                                <label>Middle Name</label>
-                            </div>
-                            <div class="col-md-8 form-group">
-                                <input type="text" id="middle-name" class="form-control" name="mname"
-                                    placeholder="Middle Name" value="{{ user.mname }}">
-                            </div>
-                            <div class="col-md-4">
-                                <label>Last Name</label>
-                            </div>
-                            <div class="col-md-8 form-group">
-                                <input type="text" id="last-name" class="form-control" name="lname"
-                                    placeholder="Last Name" value="{{ user.lname }}">
-                            </div>
-                            <div class="col-sm-12 d-flex justify-content-end">
-                                <button type="submit" class="btn btn-primary me-1 mb-1">Save Changes</button>
-                                <button type="reset" class="btn btn-light-secondary me-1 mb-1">Reset</button>
-                            </div>
+    <h2 class="az-content-title">Personal Info</h2>
+
+
+    {% include "response.html" %}
+
+    <div class="card card-dashboard-five mb-3">
+        <div class="card-body row row-sm">
+            <form class="form form-horizontal" method="POST">
+                <input type="hidden" value="{{ user.id }}" name="user_id">
+                <div class="form-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>First Name</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                            <input type="text" id="first-name" class="form-control" name="fname"
+                                placeholder="First Name" value="{{ user.fname }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label>Middle Name</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                            <input type="text" id="middle-name" class="form-control" name="mname"
+                                placeholder="Middle Name" value="{{ user.mname }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label>Last Name</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                            <input type="text" id="last-name" class="form-control" name="lname"
+                                placeholder="Last Name" value="{{ user.lname }}">
+                        </div>
+                        <div class="col-sm-12 d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary me-1 mb-1">Save Changes</button>
                         </div>
                     </div>
-                </form>
-            </div>
-        </div>
+                </div>
+            </form>
+        </div><!-- card-body -->
     </div>
-</div>
+
+
+    <div class="az-footer mg-t-auto">
+        <div class="container">
+            <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © LMS</span>
+            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"><a href="https://juancoder.com"
+                    target="_blank">Juancode IT Solutions</a></span>
+        </div><!-- container -->
+    </div><!-- az-footer -->
+</div><!-- az-content-body -->
 {% endblock %}
