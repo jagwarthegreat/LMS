@@ -70,7 +70,7 @@
                             <img src="{{ url_for('static', filename='assets/img/faces/face_default.jpg') }}" alt="">
                         </div><!-- az-img-user -->
                         <h6 style="text-align: center;">{{current_user.fname +" "+ current_user.lname}}</h6>
-                        <span>System User</span>
+                        <span>{{ current_user.category }}</span>
                     </div><!-- az-header-profile -->
 
                     <a href="{{url_for('auth.profile')}}" class="dropdown-item"><i class="typcn typcn-user-outline"></i>
