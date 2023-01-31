@@ -10,6 +10,13 @@
             <!-- <p class="az-dashboard-text">Your analytics dashboard.</p> -->
         </div>
     </div><!-- az-dashboard-one-title -->
+    <div class="row mg-b-20">
+        <div class="col-12" id="books_recommendation">
+            <h2>Top Recommendations</h2>
+            <div class="row" id="recommended_books">
+            </div>
+        </div>
+    </div>
 
     <!-- <div class="row row-sm mg-b-20">
         <div class="col-lg-7 ht-lg-100p">
@@ -108,4 +115,28 @@
     </div><!-- az-footer -->
 
 </div><!-- az-content-body -->
+
+<script type="text/javascript">
+    loadRecommendations({{user.id}});
+    function loadRecommendations(user_id){
+        fetch("/books/recommendations", {
+            method: "POST",
+            body: JSON.stringify({ user_id: user_id })
+        })
+        .then(data => data.json())
+        .then(json => {
+            console.log(json);
+            var books = "";
+            for (var i = 0; i < json.data.length; i++) {
+                const book_row = json.data[i];
+                var cover = book_row.book_cover_img == "" ? "/static/assets/img/default_book_cover.jpg" :book_row.book_cover_img;
+                books += '<div class="col-2 mt-3">'+
+                    '<p><h3>'+book_row.book_title+'</h3></p>'+
+                    '<img src="'+cover+'" style="height: 120px; width: 100px; object-fit: cover;">'+
+                '</div>';
+            }
+            $("#recommended_books").html(books);
+        });
+    }
+</script>
 {% endblock %}

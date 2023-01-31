@@ -259,6 +259,27 @@ def delete_borrowed_detail_item():
 
     return jsonify({})
 
+@views.route('/books/recommendations', methods=['POST','GET'])
+@login_required
+def books_recommendations():
+    requestData = json.loads(request.data)
+    requestID = requestData['user_id'] 
+
+    data = collab_filter_algo(requestID)
+    return jsonify({ "data": data })
+
+def collab_filter_algo(user_id):
+    books = Books.query.all()
+    data = []
+    for row in books:
+        data.append({
+            "book_id": row.book_id,
+            "book_title": row.book_title,
+            "book_author": row.book_author,
+            "book_cover_img": row.book_cover_img
+        })
+    return data
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
