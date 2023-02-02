@@ -2,3 +2,5 @@ flask
 Flask-SQLAlchemy
 flask-mysqldb
 flask-login
+pandas
+scikit-learn

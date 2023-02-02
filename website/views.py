@@ -8,6 +8,10 @@ from werkzeug.utils import secure_filename
 from datetime import datetime
 import os
 
+import numpy as np
+import pandas as pd
+from sklearn.metrics.pairwise import cosine_similarity
+
 views = Blueprint('views', __name__)
 
 
@@ -269,17 +273,69 @@ def books_recommendations():
     return jsonify({ "data": data })
 
 def collab_filter_algo(user_id):
-    books = Books.query.all()
+    train_data = prepare_data()
+    df = pd.DataFrame(train_data, columns=['user_id', 'book_id'])
+    top_n_book_ids = get_recommendations(user_id, df, 5)
+
     data = []
-    for row in books:
-        data.append({
-            "book_id": row.book_id,
-            "book_title": row.book_title,
-            "book_author": row.book_author,
-            "book_cover_img": row.book_cover_img
-        })
+    for ids in top_n_book_ids:
+        book_data = Books.query.filter_by(book_id=ids).first()
+        if book_data:
+            data.append({
+                "book_id": book_data.book_id,
+                "book_title": book_data.book_title,
+                "book_author": book_data.book_author,
+                "book_cover_img": book_data.book_cover_img
+            })
     return data
 
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+
+def prepare_data():
+    data = []
+    headers = BorrowedBooks.query.all()
+    for header in headers:
+        details = BorrowedBooksDetail.query.filter_by(borrow_id = header.borrow_id)
+        for detail in details:
+            data.append((header.user_id,detail.book_id))
+    books = Books.query.all()
+    # for book in books:
+    #     data.append((0,book.book_id))
+    return data
+
+def get_recommendations(user_id, df, num_recommendations):
+    # Get the user's book IDs
+    user_book_ids = df[df['user_id'] == user_id]['book_id'].tolist()
+    
+    # Get the books the user has not rated
+    unrated_books = df[~df['book_id'].isin(user_book_ids)]
+    
+    # Create a pivot table of the user's book IDs
+    pivot = pd.crosstab(index=df['book_id'], columns=df['user_id'], values=df['book_id'], aggfunc='count', normalize='index')
+    
+    # Get the cosine similarity between the pivot table and itself
+    similarity = cosine_similarity(pivot, pivot)
+    
+    # Map the similarity to the unrated books
+    similarity_map = pd.DataFrame(similarity, index=pivot.index, columns=pivot.index)
+    similarity_map = similarity_map.sort_values(by=similarity_map.columns[0], ascending=False)
+
+    # Get the top N most similar books to the pivot
+    top_n = similarity_map[unrated_books['book_id']].head(num_recommendations)
+    # Get the top N most similar books' IDs
+    top_n_book_ids = top_n.index.tolist()
+    
+#     # Connect to the database
+#     engine = create_engine('sqlite:///books.db')
+    
+#     # Query the database for book information
+#     books = pd.read_sql_table('books', engine)
+    
+#     # Get the top N most similar books' titles
+#     top_n_titles = books[books['book_id'].isin(top_n_book_ids)]['title']
+    
+    return top_n_book_ids
