@@ -86,7 +86,7 @@
 
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-4" id="books_borrow" style="display:none;">
+                    <div class="col-12" id="books_borrow" style="display:none;">
                         <div class="form-group">
                             <p class="mg-b-10">Borrower <span class="text-danger">*</span></p>
                             <select class="form-control" name="borrower" id="borrower" required
@@ -111,14 +111,14 @@
                             <span class="d-none d-sm-block">Save changes</span>
                         </button>
                     </div>
-                    <div class="col-4" id="books_recommendation" style="display:none;">
+                    <div class="col-12" id="books_recommendation" style="display:none;">
                         <div class="az-content-breadcrumb">
                             <span>Top 5 Recommendations</span>
                         </div>
-                        <div class="row" id="recommended_books">
+                        <div class="row" id="recommended_books" style="overflow: auto;flex-wrap: unset;">
                         </div>
                     </div>
-                    <div class="col-8">
+                    <div class="col-12 mt-4">
                         <div class="row">
                             <input type="hidden" id="borrow_header_id">
                             <div class="col-12 pb-2" style="border-bottom: 1px dashed #cdd4e0 ;"
@@ -154,6 +154,7 @@
                                             <tr>
                                                 <th>#</th>
                                                 <th>Book</th>
+                                                <th>Author</th>
                                                 <th>Qty</th>
                                                 <th>Actions</th>
                                             </tr>
@@ -317,6 +318,9 @@
                 data: 'book'
             },
             {
+                data: 'author'
+            },
+            {
                 data: 'qty'
             },
             {
@@ -418,10 +422,12 @@
             for (var i = 0; i < json.data.length; i++) {
                 const book_row = json.data[i];
                 var cover = book_row.book_cover_img == "" ? "/static/assets/img/default_book_cover.jpg" :book_row.book_cover_img;
-                books += '<div class="col-4 mt-3" onclick="clickRecommended('+book_row.book_id+')">'+
-                    '<label>'+book_row.book_title+'</label>'+
-                    '<img src="'+cover+'" style="height: 120px; width: 80px; object-fit: cover;">'+
-                '</div>';
+                // books += '<div class="col-4 mt-3" onclick="clickRecommended('+book_row.book_id+')">'+
+                //     '<label>'+book_row.book_title+'</label>'+
+                //     '<img src="'+cover+'" style="height: 120px; width: 80px; object-fit: cover;">'+
+                // '</div>';
+
+                books += '<div class="col-md-4 mt-2 d-flex" onclick="clickRecommended('+book_row.book_id+')"><img src="'+cover+'" style="border-radius: 3px;height: 250px; width: 166px; object-fit: cover;"><div><div class="book-details"><span>'+book_row.book_title+'</span><span class="book-desc">'+book_row.book_author+' ('+book_row.book_year_published+')</span><div class="book-ratings mt-3"><span class="badge badge-secondary" id="rateMe1" style="font-size: 12px; font-weight: 400;">'+book_row.book_category+'</span></div></div></div></div>';
             }
             $("#recommended_books").html(books);
         });
@@ -433,4 +439,22 @@
 
 <script src="{{ url_for('static', filename='assets/lib/datatables.net-bs/js/jquery.dataTables.min.js') }}"></script>
 <script src="{{ url_for('static', filename='assets/lib/datatables.net-bs/js/dataTables.bootstrap4.min.js') }}"></script>
+<style>
+    .book-details {
+        padding: 9px;
+        font-size: 18px;
+        font-weight: 500;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .book-desc {
+        font-size: 14px;
+        font-weight: 400;
+    }
+
+    .book-ratings {
+        font-size: 14px;
+    }
+</style>
 {% endblock %}

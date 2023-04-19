@@ -38,6 +38,9 @@
                             <th>Books</th>
                             <th>Category</th>
                             <th>ISBN</th>
+                            <th>Year Published</th>
+                            <th>In Shelf</th>
+                            <th>Price</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -57,12 +60,19 @@
                             <td>{{ book.book_title }}</td>
                             <td>{{ book.category.book_category }}</td>
                             <td>{{ book.book_isbn }}</td>
+                            <td>{{ book.book_year_published }}</td>
+                            <td>{{ book.book_qty }}</td>
+                            <td>{{ book.book_price }}</td>
                             <td>
                                 <div class="btn-icon-list">
                                     <button class="btn btn-danger btn-icon btn-sm"
                                         onClick="deleteBook({{ book.book_id }})">
                                         <i class=" typcn typcn-trash"></i>
                                     </button>
+
+                                   <!--  <button class="btn btn-primary btn-icon btn-sm">
+                                        <i class=" typcn typcn-edit"></i>
+                                    </button> -->
                                 </div>
                             </td>
                         </tr>

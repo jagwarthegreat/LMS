@@ -179,6 +179,7 @@ def borrow_detail_data():
             "borrow_id":row.borrow_id,
             "borrow_detail_id":row.borrow_detail_id,
             "book": row.book.book_title,
+            "author": row.book.book_author,
             "qty": row.qty,
             "action": ""
         })
@@ -285,7 +286,9 @@ def collab_filter_algo(user_id):
                 "book_id": book_data.book_id,
                 "book_title": book_data.book_title,
                 "book_author": book_data.book_author,
-                "book_cover_img": book_data.book_cover_img
+                "book_cover_img": book_data.book_cover_img,
+                "book_year_published": book_data.book_year_published,
+                "book_category" : book_data.category.book_category
             })
     return data
 

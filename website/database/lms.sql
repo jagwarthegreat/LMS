@@ -2,7 +2,7 @@
 -- Host:                         127.0.0.1
 -- Server version:               10.4.25-MariaDB - mariadb.org binary distribution
 -- Server OS:                    Win64
--- HeidiSQL Version:             12.3.0.6589
+-- HeidiSQL Version:             12.4.0.6659
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -34,13 +34,17 @@ CREATE TABLE IF NOT EXISTS `tbl_books` (
   `book_location` text DEFAULT NULL,
   `date_added` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`book_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=latin1;
 
--- Dumping data for table lms.tbl_books: ~2 rows (approximately)
+-- Dumping data for table lms.tbl_books: ~7 rows (approximately)
 INSERT INTO `tbl_books` (`book_id`, `book_title`, `book_author`, `book_publisher_name`, `book_category_id`, `book_isbn`, `book_year_published`, `book_qty`, `book_price`, `book_cover_img`, `book_location`, `date_added`) VALUES
-	(10, 'Book 1', 'dasd', 'asd', 1, '123123', '2023', '100', '1500', '/static/uploads/cover_images/HOME_DECOR_INDOOR_WALL_WATER_FALL_IDEAS___WATER_FEATURES_DESIGN_IDEAS___WALL_MOUNTED_IDEAS_water_a.jpg', 'test loc', '2023-01-05 16:16:08'),
-	(11, 'Book 2', '3', '3', 2, '12123', '2021', '100', '1500', '/static/uploads/cover_images/320399216_527773672707625_652718725034596717_n.jpg', 'test', '2023-01-05 16:27:04'),
-	(12, 'Book 3', '3', '3', 4, '123123', '2022', '50', '1500', '', 'test', '2023-01-05 16:27:41');
+	(13, 'A Tale Of Two Cities', 'Charles Dickens', 'Charles Dickens', 10, '000001', '2020', '200', '500', '/static/uploads/cover_images/ataleoftwocities.jpg', 'bc', '2023-04-19 10:03:10'),
+	(14, 'The Little Prince', 'Antoine de Saint-Exupéry', 'Antoine de Saint', 9, '000002', '2020', '150', '650', '/static/uploads/cover_images/the-little-prince-60.jpg', 'bc', '2023-04-19 10:03:56'),
+	(15, 'Harry Potter and the Philosopher\'s Stone', 'JK Rowling', 'JK Rowling', 3, '000003', '1995', '300', '1500', '/static/uploads/cover_images/81m1s4wIPML.jpg', 'bacolod', '2023-04-19 10:04:40'),
+	(16, 'And Then There Were None', 'Agatha Christie', 'Agatha Christie', 1, '000004', '2021', '100', '130', '/static/uploads/cover_images/and-then-there-were-none-1.jpg', 'bc', '2023-04-19 10:05:24'),
+	(17, 'The Hobbit', 'JRR Tolkien', 'JRR Tolkien', 3, '000004', '2022', '400', '450', '/static/uploads/cover_images/509977c969beddec46000011.jpg', 'bc', '2023-04-19 10:06:27'),
+	(18, 'The Lion, the Witch and the Wardrobe', 'CS Lewis', 'CS Lewis', 3, '00005', '2023', '150', '600', '/static/uploads/cover_images/narnia.jpg', 'bc', '2023-04-19 10:07:08'),
+	(19, 'The Eye of the World', 'Robert Jordan', 'Robert Jordan', 3, '0000007', '2021', '100', '1600', '/static/uploads/cover_images/1663778488-51vYL46dfL._SL500_.jpg', 'bcd', '2023-04-19 13:18:56');
 
 -- Dumping structure for table lms.tbl_book_category
 CREATE TABLE IF NOT EXISTS `tbl_book_category` (
@@ -49,15 +53,19 @@ CREATE TABLE IF NOT EXISTS `tbl_book_category` (
   `book_category_desc` text DEFAULT NULL,
   `date_added` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`book_category_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
 
--- Dumping data for table lms.tbl_book_category: ~5 rows (approximately)
+-- Dumping data for table lms.tbl_book_category: ~9 rows (approximately)
 INSERT INTO `tbl_book_category` (`book_category_id`, `book_category`, `book_category_desc`, `date_added`) VALUES
 	(1, 'Mystery', NULL, '2023-01-04 15:29:47'),
 	(2, 'Romance', NULL, '2023-01-04 15:29:47'),
 	(3, 'Fantasy', NULL, '2023-01-04 15:29:47'),
 	(4, 'Thriller', NULL, '2023-01-04 15:29:47'),
-	(5, 'Sci-Fi', 'test', '2023-01-04 15:47:36');
+	(5, 'Sci-Fi', 'test', '2023-01-04 15:47:36'),
+	(9, 'Adventure', '', '2023-04-19 10:00:42'),
+	(10, 'Historical fiction', '', '2023-04-19 10:00:55'),
+	(11, 'Horror', '', '2023-04-19 10:01:03'),
+	(12, 'Poetry', '', '2023-04-19 10:01:25');
 
 -- Dumping structure for table lms.tbl_borrowed_books
 CREATE TABLE IF NOT EXISTS `tbl_borrowed_books` (
@@ -67,9 +75,12 @@ CREATE TABLE IF NOT EXISTS `tbl_borrowed_books` (
   `date_borrowed` datetime DEFAULT NULL,
   `date_added` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`borrow_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
 
--- Dumping data for table lms.tbl_borrowed_books: ~0 rows (approximately)
+-- Dumping data for table lms.tbl_borrowed_books: ~2 rows (approximately)
+INSERT INTO `tbl_borrowed_books` (`borrow_id`, `user_id`, `status`, `date_borrowed`, `date_added`) VALUES
+	(3, 3, 'S', '2023-04-19 00:00:00', '2023-04-19 10:07:43'),
+	(8, 4, 'S', '2023-04-19 00:00:00', '2023-04-19 14:03:40');
 
 -- Dumping structure for table lms.tbl_borrowed_books_details
 CREATE TABLE IF NOT EXISTS `tbl_borrowed_books_details` (
@@ -81,9 +92,16 @@ CREATE TABLE IF NOT EXISTS `tbl_borrowed_books_details` (
   `date_returned` datetime DEFAULT NULL,
   `date_added` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`borrow_detail_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=latin1;
 
--- Dumping data for table lms.tbl_borrowed_books_details: ~0 rows (approximately)
+-- Dumping data for table lms.tbl_borrowed_books_details: ~6 rows (approximately)
+INSERT INTO `tbl_borrowed_books_details` (`borrow_detail_id`, `borrow_id`, `book_id`, `qty`, `qty_returned`, `date_returned`, `date_added`) VALUES
+	(9, 3, 13, '1', NULL, NULL, '2023-04-19 10:07:48'),
+	(10, 3, 17, '1', NULL, NULL, '2023-04-19 10:07:55'),
+	(12, 3, 18, '2', NULL, NULL, '2023-04-19 11:47:05'),
+	(13, 3, 19, '1', NULL, NULL, '2023-04-19 13:19:08'),
+	(14, 3, 15, '1', NULL, NULL, '2023-04-19 13:39:24'),
+	(17, 8, 16, '1', NULL, NULL, '2023-04-19 14:05:05');
 
 -- Dumping structure for table lms.tbl_user
 CREATE TABLE IF NOT EXISTS `tbl_user` (
@@ -97,9 +115,9 @@ CREATE TABLE IF NOT EXISTS `tbl_user` (
   `date_added` datetime DEFAULT current_timestamp(),
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
 
--- Dumping data for table lms.tbl_user: ~4 rows (approximately)
+-- Dumping data for table lms.tbl_user: ~5 rows (approximately)
 INSERT INTO `tbl_user` (`id`, `fname`, `mname`, `lname`, `username`, `password`, `category`, `date_added`) VALUES
 	(1, 'Eduard RIno', 'Questo', 'Carton', 'jag', 'sha256$srhW5avnCjLm7Tkj$0502c352f2f30fa5dfb8111d4c3e72b7c13d9f3da7f76bb3d72aabd5ba97977f', 'Admin', '2023-01-03 15:56:07'),
 	(3, 'Jagwarthegreat', 'Questo', 'Carton', 'rin', 'sha256$srhW5avnCjLm7Tkj$0502c352f2f30fa5dfb8111d4c3e72b7c13d9f3da7f76bb3d72aabd5ba97977f', 'Student', '2022-11-25 16:29:56'),
