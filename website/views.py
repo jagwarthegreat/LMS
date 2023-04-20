@@ -20,6 +20,48 @@ views = Blueprint('views', __name__)
 def home():
     return render_template("home.html", user=current_user)
 
+@views.route('/opac', methods=['GET', 'POST'])
+@login_required
+def opac():
+    if request.method == 'POST':
+        book_search = request.form.get('book_search')
+        filter_category = request.form.get('filter_category')
+
+        return filteredBooksData(book_search, filter_category)
+
+    books = Books.query.filter_by().all()
+    return render_template("opac.html", user=current_user, books=books)
+
+def filteredBooksData(book_search, filter_category):
+    count=0
+    data = {}
+    books = Books.query.filter(Books.book_title.ilike(f"%{book_search}%") |
+                               Books.book_author.ilike(f"%{book_search}%") |
+                               Books.book_publisher_name.ilike(f"%{book_search}%")
+                               ).all()
+
+    for book in books:
+        category_id = book.category.book_category
+
+        # if category_id not in data:
+        #     data[category_id] = []
+
+        count += 1
+        data.append({
+            "count": count,
+            "book_id": book.book_id,
+            "book_title": book.book_title,
+            "book_author": book.book_author,
+            "book_publisher_name": book.book_publisher_name,
+            "book_isbn": book.book_isbn,
+            "book_year_published": book.book_year_published,
+            "book_cover_img": book.book_cover_img,
+            "book_category": book.category.book_category,
+            "date_added": book.date_added.strftime("%Y-%m-%d")
+        })
+
+    filteredBooks = jsonify({"data": data})
+    return filteredBooks
 
 @views.route('/books/categories', methods=['GET', 'POST'])
 @login_required
