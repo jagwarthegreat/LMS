@@ -18,26 +18,29 @@
                     <a href="{{url_for('views.opac')}}" class="nav-link"><i class="typcn typcn-book"></i>
                         Books</a>
                 </li>
-                <li class="nav-item">
-                    <a href="" class="nav-link with-sub"><i class="typcn typcn-document"></i> Masterdata</a>
-                    <nav class="az-menu-sub">
-                        <a href="{{url_for('views.booksCategories')}}" class="nav-link">Categories</a>
-                        <a href="{{url_for('views.books')}}" class="nav-link">Books</a>
-                    </nav>
-                </li>
-                <li class="nav-item">
-                    <a href="" class="nav-link with-sub"><i class="typcn typcn-book"></i> Transaction</a>
-                    <div class="az-menu-sub">
-                        <div class="container">
-                            <div>
-                                <nav class="nav">
-                                    <a href="{{url_for('views.booksBorrow')}}" class="nav-link">Borrow Books</a>
-                                    <!-- <a href="{{url_for('views.booksBorrow')}}" class="nav-link">Return Books</a> -->
-                                </nav>
-                            </div>
-                        </div><!-- container -->
-                    </div>
-                </li>
+
+                {% if user.category != "Student" %}
+                    <li class="nav-item">
+                        <a href="" class="nav-link with-sub"><i class="typcn typcn-document"></i> Masterdata</a>
+                        <nav class="az-menu-sub">
+                            <a href="{{url_for('views.booksCategories')}}" class="nav-link">Categories</a>
+                            <a href="{{url_for('views.books')}}" class="nav-link">Books</a>
+                        </nav>
+                    </li>
+                    <li class="nav-item">
+                        <a href="" class="nav-link with-sub"><i class="typcn typcn-book"></i> Transaction</a>
+                        <div class="az-menu-sub">
+                            <div class="container">
+                                <div>
+                                    <nav class="nav">
+                                        <a href="{{url_for('views.booksBorrow')}}" class="nav-link">Borrow Books</a>
+                                        <!-- <a href="{{url_for('views.booksBorrow')}}" class="nav-link">Return Books</a> -->
+                                    </nav>
+                                </div>
+                            </div><!-- container -->
+                        </div>
+                    </li>
+                {% endif %}
             </ul>
         </div><!-- az-header-menu -->
         <div class="az-header-right">
@@ -58,8 +61,10 @@
 
                     <a href="{{url_for('auth.profile')}}" class="dropdown-item"><i class="typcn typcn-user-outline"></i>
                         Edit Profile</a>
-                    <a href="{{url_for('auth.users')}}" class="dropdown-item"><i class="typcn typcn-cog-outline"></i>
+                    {% if user.category != "Student" %}
+                        <a href="{{url_for('auth.users')}}" class="dropdown-item"><i class="typcn typcn-cog-outline"></i>
                         Sytem Users</a>
+                    {% endif %}
                     <a href="{{url_for('auth.logout')}}" class="dropdown-item"><i class="typcn typcn-power-outline"></i>
                         Sign
                         Out</a>

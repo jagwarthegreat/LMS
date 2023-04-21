@@ -56,3 +56,8 @@ class BorrowedBooksDetail(db.Model):
     date_added = db.Column(db.DateTime(timezone=True), default=func.now())
     borrowedBook = db.relationship('BorrowedBooks')
     book = db.relationship('Books')
+
+    @classmethod
+    def get_total_qty(cls, book_id):
+        total_qty = db.session.query(func.sum(cls.qty)).filter(cls.book_id == book_id).scalar()
+        return total_qty

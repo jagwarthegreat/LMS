@@ -24,8 +24,9 @@ def home():
 @login_required
 def opac():
     if request.method == 'POST':
-        book_search = request.form.get('book_search')
-        filter_category = request.form.get('filter_category')
+        requestData = json.loads(request.data)
+        book_search = requestData['book_search']
+        filter_category = requestData['filter_category']
 
         return filteredBooksData(book_search, filter_category)
 
@@ -34,12 +35,20 @@ def opac():
 
 def filteredBooksData(book_search, filter_category):
     count=0
-    data = {}
-    books = Books.query.filter(Books.book_title.ilike(f"%{book_search}%") |
-                               Books.book_author.ilike(f"%{book_search}%") |
-                               Books.book_publisher_name.ilike(f"%{book_search}%")
-                               ).all()
+    data = []
+    query = Books.query
 
+    if book_search:
+        query = Books.query.filter(
+            (Books.book_title.ilike(f"%{book_search}%")) |
+            (Books.book_author.ilike(f"%{book_search}%")) |
+            (Books.book_publisher_name.ilike(f"%{book_search}%"))
+        )
+
+    if filter_category:
+        query = query.filter_by(book_category_id=filter_category)
+
+    books = query.all()
     for book in books:
         category_id = book.category.book_category
 
@@ -55,13 +64,20 @@ def filteredBooksData(book_search, filter_category):
             "book_publisher_name": book.book_publisher_name,
             "book_isbn": book.book_isbn,
             "book_year_published": book.book_year_published,
+            "book_location": book.book_location,
             "book_cover_img": book.book_cover_img,
             "book_category": book.category.book_category,
+            "borrows": bookBorrowCount(book.book_id),
+            "onshelf": booksOnShelf(book.book_id),
             "date_added": book.date_added.strftime("%Y-%m-%d")
         })
 
     filteredBooks = jsonify({"data": data})
     return filteredBooks
+
+def bookBorrowCount(book_id):
+    count = BorrowedBooksDetail.query.filter_by(book_id=book_id).count()
+    return count
 
 @views.route('/books/categories', methods=['GET', 'POST'])
 @login_required
@@ -322,15 +338,21 @@ def collab_filter_algo(user_id):
 
     data = []
     for ids in top_n_book_ids:
-        book_data = Books.query.filter_by(book_id=ids).first()
-        if book_data:
+        book = Books.query.filter_by(book_id=ids).first()
+        if book:
             data.append({
-                "book_id": book_data.book_id,
-                "book_title": book_data.book_title,
-                "book_author": book_data.book_author,
-                "book_cover_img": book_data.book_cover_img,
-                "book_year_published": book_data.book_year_published,
-                "book_category" : book_data.category.book_category
+                "book_id": book.book_id,
+                "book_title": book.book_title,
+                "book_author": book.book_author,
+                "book_publisher_name": book.book_publisher_name,
+                "book_isbn": book.book_isbn,
+                "book_year_published": book.book_year_published,
+                "book_location": book.book_location,
+                "book_cover_img": book.book_cover_img,
+                "book_category": book.category.book_category,
+                "borrows": bookBorrowCount(book.book_id),
+                "onshelf": booksOnShelf(book.book_id),
+                "date_added": book.date_added.strftime("%Y-%m-%d")
             })
     return data
 
@@ -338,7 +360,22 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def booksOnShelf(book_id):
+    book = Books.query.filter_by(book_id=book_id).first()
+    total_books_borrowed = BorrowedBooksDetail.get_total_qty(book_id)
 
+    if book is None:
+        bqty = 0
+    else:
+        bqty = float(book.book_qty)
+
+    if total_books_borrowed is None:
+        bBorrowed = 0
+    else:
+        bBorrowed = float(total_books_borrowed)
+
+    remaining = bqty - bBorrowed
+    return remaining
 
 def prepare_data():
     data = []

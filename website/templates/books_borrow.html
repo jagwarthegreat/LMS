@@ -116,6 +116,7 @@
                             <span>Top 5 Recommendations</span>
                         </div>
                         <div class="row" id="recommended_books" style="overflow: auto;flex-wrap: unset;">
+
                         </div>
                     </div>
                     <div class="col-12 mt-4">
@@ -124,6 +125,10 @@
                             <div class="col-12 pb-2" style="border-bottom: 1px dashed #cdd4e0 ;"
                                 id="add_borrow_detail_section">
                                 <div class="row">
+                                    <div class="col-2">
+                                        <input type="text" class="form-control" name="transaction_id"
+                                            id="transaction_id" required disabled />
+                                    </div>
                                     <div class="col-4">
                                         <select class="form-control" name="selected_book" id="selected_book" required
                                             style="width: 100% !important; border-radius: 0px !important; border: 1px solid #cdd4e0 !important;color: #596882 !important; padding: 0.375rem 0.75rem !important;font-size: 0.875rem !important;font-weight: 400 !important;line-height: 1.5 !important;">
@@ -140,7 +145,7 @@
                                             id="book_qty" required autocomplete="off" />
                                     </div>
                                     <div class="col-3">
-                                        <a class="btn btn-success btn-with-icon" id="add_book_btn"
+                                        <a class="btn btn-primary btn-with-icon" id="add_book_btn"
                                             onclick="addBorrowDetail()">
                                             <i class="typcn typcn-plus"></i> Add Book
                                         </a>
@@ -164,6 +169,11 @@
                                         </tbody>
                                     </table>
                                 </div>
+                            </div>
+                            <div class="col-12 mt-2" style="display: flex;flex-direction: row;justify-content: end;" id="btn-finish">
+                                <button class="btn btn-success btn-with-icon" onclick="finishBorrow()">
+                                    <i class="typcn typcn-input-checked"></i> Finish
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -209,6 +219,7 @@
         
         $("#books_borrow").show();
         $("#books_recommendation").hide();
+        $("#btn-finish").hide();
 
         $("#addBorrowBookModal").modal('show')
     }
@@ -372,6 +383,7 @@
         })
             .then(data => data.json())
             .then(json => {
+                $("#transaction_id").val(json.data.trans_id);
                 $("#borrower").val(json.data.user_id);
                 $("#date_borrowed").val(json.data.date_borrowed);
                 $("#borrowed_status").html("(" + json.data.status + ")");
@@ -382,6 +394,7 @@
                 $("#add_borrow_detail_section").show();
                 $("#books_borrow").hide();
                 $("#books_recommendation").show();
+                $("#btn-finish").show();
                 loadRecommendations(json.data.user_id);
 
                 $("#addBorrowBookModal").modal('show');
@@ -422,12 +435,8 @@
             for (var i = 0; i < json.data.length; i++) {
                 const book_row = json.data[i];
                 var cover = book_row.book_cover_img == "" ? "/static/assets/img/default_book_cover.jpg" :book_row.book_cover_img;
-                // books += '<div class="col-4 mt-3" onclick="clickRecommended('+book_row.book_id+')">'+
-                //     '<label>'+book_row.book_title+'</label>'+
-                //     '<img src="'+cover+'" style="height: 120px; width: 80px; object-fit: cover;">'+
-                // '</div>';
 
-                books += '<div class="col-md-4 mt-2 d-flex" onclick="clickRecommended('+book_row.book_id+')"><img src="'+cover+'" style="border-radius: 3px;height: 250px; width: 166px; object-fit: cover;"><div><div class="book-details"><span>'+book_row.book_title+'</span><span class="book-desc">'+book_row.book_author+' ('+book_row.book_year_published+')</span><div class="book-ratings mt-3"><span class="badge badge-secondary" id="rateMe1" style="font-size: 12px; font-weight: 400;">'+book_row.book_category+'</span></div></div></div></div>';
+                books += '<div class="col-md-4 mt-2 mb-2 d-flex hoverBook" onclick="clickRecommended('+book_row.book_id+')"><img src="'+cover+'" style="border-radius: 3px;height: 100%; width: 112px; object-fit: fill;"><div class="bd rounded hoverDt" style="width: 100%;"><div class="book-details"><span>'+book_row.book_title+'</span><span class="book-desc">'+book_row.book_author+' ('+book_row.book_year_published+')</span><span class="book-desc">'+book_row.book_location+'</span><span class="book-desc">Borrows: '+book_row.borrows+'</span><span class="book-desc">On shelf: '+book_row.onshelf+'</span><div class="book-ratings mt-3"><span class="badge badge-secondary" style="font-size: 11px; font-weight: 400;">'+book_row.book_category+'</span></div></div></div></div>';
             }
             $("#recommended_books").html(books);
         });
@@ -442,19 +451,23 @@
 <style>
     .book-details {
         padding: 9px;
-        font-size: 18px;
-        font-weight: 500;
+        font-size: 12px;
+        font-weight: 700;
         display: flex;
         flex-direction: column;
     }
 
     .book-desc {
-        font-size: 14px;
-        font-weight: 400;
+        font-size: 11px;
+        font-weight: 500;
     }
 
     .book-ratings {
-        font-size: 14px;
+        font-size: 12px;
+    }
+
+    .hoverBook:hover > .hoverDt {
+        background-color: #0000002e;
     }
 </style>
 {% endblock %}
