@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Book Categories{% endblock %}
+{% block title %}Books{% endblock %}
 
 {% block content %}
 <style>
@@ -40,7 +40,7 @@
                             <th>ISBN</th>
                             <th>Year Published</th>
                             <th>In Shelf</th>
-                            <th>Price</th>
+                            <th>Location</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -58,11 +58,11 @@
                                 {% endif %}
                             </td>
                             <td>{{ book.book_title }}</td>
-                            <td>{{ book.category.book_category }}</td>
+                            <td>{{ book.book_category }}</td>
                             <td>{{ book.book_isbn }}</td>
                             <td>{{ book.book_year_published }}</td>
-                            <td>{{ booksOnShelf(book.book_id) }}</td>
-                            <td>{{ book.book_price }}</td>
+                            <td>{{ book.onshelf }}</td>
+                            <td>{{ book.book_location }}</td>
                             <td>
                                 <div class="btn-icon-list">
                                     <button class="btn btn-danger btn-icon btn-sm"

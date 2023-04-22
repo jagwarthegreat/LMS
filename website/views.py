@@ -137,8 +137,27 @@ def books():
         return redirect(url_for('views.books'))
 
     categories = Category.query.all()
+    data = []
     books = Books.query.all()
-    return render_template("books.html", user=current_user, categories=categories, books=books)
+    for book in books:
+        data.append({
+            "book_id": book.book_id,
+            "book_title": book.book_title,
+            "book_author": book.book_author,
+            "book_publisher_name": book.book_publisher_name,
+            "book_isbn": book.book_isbn,
+            "book_year_published": book.book_year_published,
+            "book_location": book.book_location,
+            "book_price": book.book_price,
+            "book_cover_img": book.book_cover_img,
+            "book_category": book.category.book_category,
+            "book_category_id": book.book_category_id,
+            "borrows": bookBorrowCount(book.book_id),
+            "onshelf": booksOnShelf(book.book_id),
+            "date_added": book.date_added.strftime("%Y-%m-%d")
+        })
+
+    return render_template("books.html", user=current_user, categories=categories, books=data)
 
 @views.route('/books/borrow', methods=['GET', 'POST'])
 @login_required
@@ -193,6 +212,7 @@ def borrow_store():
     requestData = json.loads(request.data)
     borrower_id = requestData['borrower'] 
     date_borrowed = requestData['date_borrowed']
+    # reference_code = "BRW-" + datetime.now().strftime('%Y%m%d%H%M%S')
 
     try:
         borrow_insert = BorrowedBooks(user_id=borrower_id, status="S", date_borrowed=date_borrowed)
