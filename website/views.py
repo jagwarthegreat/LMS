@@ -31,7 +31,8 @@ def opac():
         return filteredBooksData(book_search, filter_category)
 
     books = Books.query.filter_by().all()
-    return render_template("opac.html", user=current_user, books=books)
+    genras = Category.query.filter_by().all()
+    return render_template("opac.html", user=current_user, books=books, genras=genras)
 
 def filteredBooksData(book_search, filter_category):
     count=0
@@ -178,6 +179,24 @@ def booksBorrow():
     books = Books.query.all()
     return render_template("books_borrow.html", user=current_user, borrowedBooks=borrowedBooks, users=users, books=books)
 
+@views.route('/books/return', methods=['GET', 'POST'])
+@login_required
+def booksReturn():
+    # if request.method == 'POST':
+    #     category = request.form.get('category')
+    #     desc = request.form.get('desc')
+
+    #     catValues = Category(book_category=category, book_category_desc=desc)
+    #     db.session.add(catValues)
+    #     db.session.commit()
+
+    #     flash('Book Category added!', category='success')
+    #     return redirect(url_for('views.booksCategories'))
+
+    users = User.query.all()
+    borrowedBooks = BorrowedBooks.query.filter_by(status='B').all()
+    return render_template("books_return.html", user=current_user, borrowedBooks=borrowedBooks, users=users)
+
 @views.route('/books/destroy', methods=['POST'])
 @login_required
 def delete_book():
@@ -212,10 +231,11 @@ def borrow_store():
     requestData = json.loads(request.data)
     borrower_id = requestData['borrower'] 
     date_borrowed = requestData['date_borrowed']
-    # reference_code = "BRW-" + datetime.now().strftime('%Y%m%d%H%M%S')
+
+    reference_code = "BRW-" + datetime.now().strftime('%Y%m%d%H%M%S')
 
     try:
-        borrow_insert = BorrowedBooks(user_id=borrower_id, status="S", date_borrowed=date_borrowed)
+        borrow_insert = BorrowedBooks(user_id=borrower_id, trans_id=reference_code, status="S", date_borrowed=date_borrowed)
         db.session.add(borrow_insert)
         db.session.commit()
         last_id = borrow_insert.borrow_id
@@ -286,8 +306,45 @@ def borrow_data():
         data.append({
             "count": count,
             "borrow_id": row.borrow_id,
+            "trans_id": row.trans_id,
             "borrower":row.user.fname +" "+ row.user.mname +" "+ row.user.lname,
             "date_borrowed": row.date_borrowed.strftime("%Y-%m-%d"),
+            "status": status,
+            "action": ""
+        })
+
+    response = {"data": data}
+    return jsonify(response)
+
+@views.route('/books/return/data', methods=['GET', 'POST'])
+@login_required
+def return_data():
+    # borrowId = request.form.get('borrowId')
+
+    count=0
+    data = []
+    borrow_data = BorrowedBooks.query.filter_by(status='R').all()
+    for row in borrow_data:
+        count += 1
+
+        if row.status == "B":
+            status = "Borrowed"
+        elif row.status == "R":
+            status = "Returned"
+        else:
+            status = "Saved"
+
+        if row.date_returned is None:
+            date_r = ""
+        else:
+            date_r = row.date_returned.strftime("%Y-%m-%d")
+
+        data.append({
+            "count": count,
+            "borrow_id": row.borrow_id,
+            "trans_id": row.trans_id,
+            "borrower":row.user.fname +" "+ row.user.mname +" "+ row.user.lname,
+            "date_returned": date_r,
             "status": status,
             "action": ""
         })
@@ -311,6 +368,7 @@ def borrow_detail_edit():
         status = "Saved"
 
     data = {
+        "trans_id": borrow_details.trans_id,
         "user_id": borrow_details.user_id,
         "status": status,
         "date_borrowed": borrow_details.date_borrowed.strftime("%Y-%m-%d")
@@ -341,6 +399,63 @@ def delete_borrowed_detail_item():
     db.session.commit()
 
     return jsonify({})
+
+@views.route('/books/borrow/detail/finish', methods=['POST'])
+@login_required
+def finish_borrow():
+    requestData = json.loads(request.data)
+    requestID = requestData['trans_id']
+    
+    # if borrow.status == "B":
+    #     status = "Borrowed"
+    # elif borrow.status == "R":
+    #     status = "Returned"
+    # else:
+    #     status = "Saved"
+
+    update_status = {BorrowedBooks.status:"B"}
+    db.session.query(BorrowedBooks).filter(BorrowedBooks.trans_id == requestID).update(update_status, synchronize_session = False)
+    db.session.commit()
+
+    flash('Borrow Finished!', category='success')
+    return jsonify({ "data": 1 })
+
+@views.route('/books/return/finish', methods=['POST'])
+@login_required
+def finish_return():
+    requestData = json.loads(request.data)
+    date_returned = requestData['date_returned']
+    borrow_id = requestData['borrow_id']
+
+    details = BorrowedBooksDetail.query.filter_by(borrow_id=borrow_id).first()
+    update_details = {BorrowedBooksDetail.qty_returned:details.qty, BorrowedBooksDetail.date_returned:date_returned}
+    db.session.query(BorrowedBooksDetail).filter(BorrowedBooksDetail.borrow_id == borrow_id).update(update_details, synchronize_session = False)
+    db.session.commit()
+
+    update_status = {BorrowedBooks.status:"R", BorrowedBooks.date_returned:date_returned}
+    db.session.query(BorrowedBooks).filter(BorrowedBooks.borrow_id == borrow_id).update(update_status, synchronize_session = False)
+    db.session.commit()
+
+    flash('Books returned!', category='success')
+    return jsonify({ "data": 1 })
+
+@views.route('/books/return/borrower_data', methods=['POST'])
+@login_required
+def return_borrower_data():
+    requestData = json.loads(request.data)
+    borrow_id = requestData['borrow_id']
+
+    data = []
+    borrow_data = BorrowedBooks.query.filter_by(borrow_id=borrow_id).all()
+    for row in borrow_data:
+        data.append({
+            "borrower":row.user.fname +" "+ row.user.mname +" "+ row.user.lname,
+            "date_borrowed": row.date_borrowed.strftime("%Y-%m-%d")
+        })
+
+    response = {"data": data}
+    return jsonify(response)
+    
 
 @views.route('/books/recommendations', methods=['POST','GET'])
 @login_required

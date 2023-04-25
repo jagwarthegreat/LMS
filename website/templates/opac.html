@@ -20,32 +20,11 @@
                    <select class="form-control" name="category" id="category" required="" onchange="searchForBook()">
                         <option value="">- all categories -</option>
                         
-                        <option value="1">Mystery
+                        {% for genre in genras %}
+                        <option value="{{ genre.book_category_id }}">
+                            {{ genre.book_category }}
                         </option>
-                        
-                        <option value="2">Romance
-                        </option>
-                        
-                        <option value="3">Fantasy
-                        </option>
-                        
-                        <option value="4">Thriller
-                        </option>
-                        
-                        <option value="5">Sci-Fi
-                        </option>
-                        
-                        <option value="9">Adventure
-                        </option>
-                        
-                        <option value="10">Historical fiction
-                        </option>
-                        
-                        <option value="11">Horror
-                        </option>
-                        
-                        <option value="12">Poetry
-                        </option>
+                        {% endfor %}
                         
                     </select>
                 </div>

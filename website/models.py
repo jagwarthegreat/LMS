@@ -39,9 +39,11 @@ class Category(db.Model):
 class BorrowedBooks(db.Model):
     __tablename__ = 'tbl_borrowed_books'
     borrow_id = db.Column(db.Integer, primary_key=True)
+    trans_id = db.Column(db.Text())
     user_id = db.Column(db.Integer, db.ForeignKey('tbl_user.id'))
     status = db.Column(db.String(1), nullable=True)
     date_borrowed = db.Column(db.DateTime(timezone=True))
+    date_returned = db.Column(db.DateTime(timezone=True))
     date_added = db.Column(db.DateTime(timezone=True), default=func.now())
     user = db.relationship('User')
 
@@ -59,5 +61,9 @@ class BorrowedBooksDetail(db.Model):
 
     @classmethod
     def get_total_qty(cls, book_id):
-        total_qty = db.session.query(func.sum(cls.qty)).filter(cls.book_id == book_id).scalar()
+        total_qty = db.session.query(func.sum(cls.qty)).\
+            join(BorrowedBooks).\
+            filter(BorrowedBooks.status == 'B').\
+            filter(cls.book_id == book_id).scalar()
+            
         return total_qty
