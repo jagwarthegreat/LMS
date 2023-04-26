@@ -77,7 +77,11 @@ def filteredBooksData(book_search, filter_category):
     return filteredBooks
 
 def bookBorrowCount(book_id):
-    count = BorrowedBooksDetail.query.filter_by(book_id=book_id).count()
+    count = db.session.query(BorrowedBooksDetail)\
+                     .join(BorrowedBooks)\
+                     .filter(BorrowedBooksDetail.book_id == book_id,
+                             BorrowedBooks.status != 'S')\
+                     .count()
     return count
 
 @views.route('/books/categories', methods=['GET', 'POST'])
@@ -242,7 +246,7 @@ def borrow_store():
     except Exception as e:
         last_id = 0
 
-    return jsonify({ "header_id": last_id })
+    return jsonify({ "header_id": last_id, "trans_id": borrow_insert.trans_id })
 
 @views.route('/books/borrow/detail/store', methods=['POST'])
 @login_required
@@ -417,7 +421,6 @@ def finish_borrow():
     db.session.query(BorrowedBooks).filter(BorrowedBooks.trans_id == requestID).update(update_status, synchronize_session = False)
     db.session.commit()
 
-    flash('Borrow Finished!', category='success')
     return jsonify({ "data": 1 })
 
 @views.route('/books/return/finish', methods=['POST'])
@@ -436,7 +439,6 @@ def finish_return():
     db.session.query(BorrowedBooks).filter(BorrowedBooks.borrow_id == borrow_id).update(update_status, synchronize_session = False)
     db.session.commit()
 
-    flash('Books returned!', category='success')
     return jsonify({ "data": 1 })
 
 @views.route('/books/return/borrower_data', methods=['POST'])
