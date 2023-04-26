@@ -49,6 +49,50 @@
     </div><!-- az-footer -->
 
 </div><!-- az-content-body -->
+<script type="text/javascript">
+    loadRecommendations({{user.id}});
+
+    function searchForBook() {
+        loadRecommendations({{user.id}});
+    }
+
+    function loadRecommendations(user_id){
+        var book_search = $("#search_bar").val();
+        var filter_category = $("#category").val();
+        fetch("/opac", {
+            method: "POST",
+            body: JSON.stringify({ user_id: user_id, book_search: book_search, filter_category: filter_category })
+        })
+        .then(data => data.json())
+        .then(json => {
+            var books = "";
+            var books_with_avg = {};
+            for (var i = 0; i < json.data.length; i++) {
+                const book_row = json.data[i];
+                const avgBook = (book_row.avg_rating > 0)?(parseFloat(book_row.avg_rating)).toFixed(1):0;
+                var cover = book_row.book_cover_img == "" ? "/static/assets/img/default_book_cover.jpg" :book_row.book_cover_img;
+
+                books += '<div class="col-md-3 mt-2 d-flex hoverBook"><img src="'+cover+'" style="border-radius: 3px;height: 100%; width: 112px; object-fit: fill;"><div class="bd rounded hoverDt" style="width: 100%;"><div class="book-details"><span>'+book_row.book_title+'</span><span class="book-desc">'+book_row.book_author+' ('+book_row.book_year_published+')</span><span class="book-desc">'+book_row.book_location+'</span><span class="book-desc">Borrows: '+book_row.borrows+'</span><span class="book-desc">On shelf: '+book_row.onshelf+'</span><span class="book-desc">Rating: '+avgBook+'/5</span><div class="avgrating" id="avgrating'+book_row.book_id+'"></div><div class="book-ratings mt-1 mb-2"><span class="badge badge-secondary" style="font-size: 11px; font-weight: 400;">'+book_row.book_category+'</span></div></div></div></div>';
+
+                books_with_avg[book_row.book_id] = avgBook;
+            }
+            $("#recommended_books").html(books);
+
+            for (const book_id in books_with_avg) {
+                const avg_rating = books_with_avg[book_id];
+
+                $('#avgrating'+book_id).starRating({
+                    starIconEmpty:'typcn typcn-star-outline',
+                    starIconFull:'typcn typcn-star',
+                    starSize: 0.5,
+                    showInfo: false,
+                    stars: 5,
+                    setStar: avg_rating
+                });
+            }
+        });
+    }
+</script>
 <style>
     .book-details {
         padding: 9px;
@@ -76,32 +120,10 @@
     .hoverBook:hover > .hoverDt {
         background-color: #0000002e;
     }
+
+    .avgrating {
+        font-size: 6px;
+        align-items: baseline !important;
+    }
 </style>
-<script type="text/javascript">
-    loadRecommendations({{user.id}});
-
-    function searchForBook() {
-        loadRecommendations({{user.id}});
-    }
-
-    function loadRecommendations(user_id){
-        var book_search = $("#search_bar").val();
-        var filter_category = $("#category").val();
-        fetch("/opac", {
-            method: "POST",
-            body: JSON.stringify({ user_id: user_id, book_search: book_search, filter_category: filter_category })
-        })
-        .then(data => data.json())
-        .then(json => {
-            var books = "";
-            for (var i = 0; i < json.data.length; i++) {
-                const book_row = json.data[i];
-                var cover = book_row.book_cover_img == "" ? "/static/assets/img/default_book_cover.jpg" :book_row.book_cover_img;
-
-                books += '<div class="col-md-3 mt-2 d-flex hoverBook"><img src="'+cover+'" style="border-radius: 3px;height: 100%; width: 112px; object-fit: fill;"><div class="bd rounded hoverDt" style="width: 100%;"><div class="book-details"><span>'+book_row.book_title+'</span><span class="book-desc">'+book_row.book_author+' ('+book_row.book_year_published+')</span><span class="book-desc">'+book_row.book_location+'</span><span class="book-desc">Borrows: '+book_row.borrows+'</span><span class="book-desc">On shelf: '+book_row.onshelf+'</span><div class="book-ratings mt-3"><span class="badge badge-secondary" style="font-size: 11px; font-weight: 400;">'+book_row.book_category+'</span></div></div></div></div>';
-            }
-            $("#recommended_books").html(books);
-        });
-    }
-</script>
 {% endblock %}

@@ -70,6 +70,7 @@ def filteredBooksData(book_search, filter_category):
             "book_category": book.category.book_category,
             "borrows": bookBorrowCount(book.book_id),
             "onshelf": booksOnShelf(book.book_id),
+            "avg_rating": book.avg_rating,
             "date_added": book.date_added.strftime("%Y-%m-%d")
         })
 
@@ -283,6 +284,7 @@ def borrow_detail_data():
             "book": row.book.book_title,
             "author": row.book.book_author,
             "qty": row.qty,
+            "qty_returned": row.qty_returned,
             "action": ""
         })
 
@@ -429,13 +431,14 @@ def finish_return():
     requestData = json.loads(request.data)
     date_returned = requestData['date_returned']
     borrow_id = requestData['borrow_id']
+    book_rating = requestData['book_rating']
 
     details = BorrowedBooksDetail.query.filter_by(borrow_id=borrow_id).first()
     update_details = {BorrowedBooksDetail.qty_returned:details.qty, BorrowedBooksDetail.date_returned:date_returned}
     db.session.query(BorrowedBooksDetail).filter(BorrowedBooksDetail.borrow_id == borrow_id).update(update_details, synchronize_session = False)
     db.session.commit()
 
-    update_status = {BorrowedBooks.status:"R", BorrowedBooks.date_returned:date_returned}
+    update_status = {BorrowedBooks.status:"R", BorrowedBooks.date_returned:date_returned, BorrowedBooks.rating:book_rating}
     db.session.query(BorrowedBooks).filter(BorrowedBooks.borrow_id == borrow_id).update(update_status, synchronize_session = False)
     db.session.commit()
 
@@ -489,6 +492,7 @@ def collab_filter_algo(user_id):
                 "book_category": book.category.book_category,
                 "borrows": bookBorrowCount(book.book_id),
                 "onshelf": booksOnShelf(book.book_id),
+                "avg_rating": book.avg_rating,
                 "date_added": book.date_added.strftime("%Y-%m-%d")
             })
     return data
@@ -513,6 +517,10 @@ def booksOnShelf(book_id):
 
     remaining = bqty - bBorrowed
     return remaining
+
+def avgRatings(book_id):
+    average_rating = BorrowedBooks.query(func.avg(BorrowedBooks.rating)).filter_by(book_id=book_id).scalar()
+    return average_rating
 
 def prepare_data():
     data = []

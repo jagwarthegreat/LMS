@@ -104,10 +104,15 @@
                             </select>
 
                         </div>
+                        <div class="form-group">
+                            <label>Please rate <span class="text-danger">*</span></label>
+                            <div class="rating"></div>
+                            <input type="hidden" id="book_rating">
+                        </div>
                     </div>
-                    <div class="col-12 mt-4">
+                    <div class="col-12">
                         <div class="row">
-                            <div class="col-12 mt-2 showAfterOnChange">
+                            <div class="col-12 showAfterOnChange">
                                 <table class="table table-bordered">
                                     <tbody>
                                         <tr>
@@ -156,6 +161,20 @@
     $(function() {
         $(".showAfterOnChange").hide();
         loadReturnedData();
+
+        $('.rating').starRating({
+            starIconEmpty:'typcn typcn-star-outline',
+            starIconFull:'typcn typcn-star',
+            starSize: 0.5,
+            showInfo: false,
+            stars: 5
+        });
+
+        $(document).on('change', '.rating',
+        function (e, stars, index) {
+            $("#book_rating").val(stars);
+            alert(`You rate ${stars} stars!`);
+        });
     });
 
     function addReturnBookModal() {
@@ -288,9 +307,10 @@
             if (result.value) {
                 var date_returned = $("#date_returned").val();
                 var borrow_id = $("#borrow_id").val();
+                var book_rating = $("#book_rating").val();
                 fetch("/books/return/finish", {
                     method: "POST",
-                    body: JSON.stringify({ date_returned: date_returned, borrow_id:borrow_id })
+                    body: JSON.stringify({ date_returned: date_returned, borrow_id:borrow_id, book_rating:book_rating })
                 })
                 .then(data => data.json())
                 .then(json => {
@@ -326,6 +346,11 @@
 
     .hoverBook:hover > .hoverDt {
         background-color: #0000002e;
+    }
+
+    .rating {
+        font-size: 10px;
+        align-items: baseline !important;
     }
 </style>
 {% endblock %}

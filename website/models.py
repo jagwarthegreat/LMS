@@ -1,6 +1,8 @@
 from . import db
 from flask_login import UserMixin
 from sqlalchemy.sql import func
+from sqlalchemy.dialects.mysql import DECIMAL, TINYINT
+from sqlalchemy.ext.hybrid import hybrid_property
 
 class User(db.Model, UserMixin):
     __tablename__ = 'tbl_user'
@@ -29,6 +31,15 @@ class Books(db.Model):
     date_added = db.Column(db.DateTime(timezone=True), default=func.now())
     category = db.relationship('Category')
 
+    @hybrid_property
+    def avg_rating(self):
+        average_rating = db.session.query(func.avg(BorrowedBooks.rating)).\
+            join(BorrowedBooksDetail, BorrowedBooksDetail.borrow_id == BorrowedBooks.borrow_id).\
+            filter(BorrowedBooks.status == 'R').\
+            filter(BorrowedBooksDetail.book_id == self.book_id).\
+            scalar()
+        return average_rating or 0.0
+
 class Category(db.Model):
     __tablename__ = 'tbl_book_category'
     book_category_id = db.Column(db.Integer, primary_key=True)
@@ -44,6 +55,7 @@ class BorrowedBooks(db.Model):
     status = db.Column(db.String(1), nullable=True)
     date_borrowed = db.Column(db.DateTime(timezone=True))
     date_returned = db.Column(db.DateTime(timezone=True))
+    rating = db.Column(db.Integer, nullable=True, default=0)
     date_added = db.Column(db.DateTime(timezone=True), default=func.now())
     user = db.relationship('User')
 
