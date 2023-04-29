@@ -32,19 +32,22 @@ CREATE TABLE IF NOT EXISTS `tbl_books` (
   `book_price` varchar(16) NOT NULL,
   `book_cover_img` text DEFAULT NULL,
   `book_location` text DEFAULT NULL,
+  `book_accession_num` text DEFAULT NULL,
+  `book_call_number` text DEFAULT NULL,
+  `book_ddc` text DEFAULT NULL,
   `date_added` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`book_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=latin1;
 
 -- Dumping data for table lms.tbl_books: ~7 rows (approximately)
-INSERT INTO `tbl_books` (`book_id`, `book_title`, `book_author`, `book_publisher_name`, `book_category_id`, `book_isbn`, `book_year_published`, `book_qty`, `book_price`, `book_cover_img`, `book_location`, `date_added`) VALUES
-	(13, 'A Tale Of Two Cities', 'Charles Dickens', 'Charles Dickens', 10, '000001', '2020', '200', '500', '/static/uploads/cover_images/ataleoftwocities.jpg', 'QA 100.74.B50', '2023-04-19 10:03:10'),
-	(14, 'The Little Prince', 'Antoine de Saint-Exupéry', 'Antoine de Saint', 9, '000002', '2020', '150', '650', '/static/uploads/cover_images/the-little-prince-60.jpg', 'QA 100.74.B50', '2023-04-19 10:03:56'),
-	(15, 'Harry Potter and the Philosopher\'s Stone', 'JK Rowling', 'JK Rowling', 3, '000003', '1995', '300', '1500', '/static/uploads/cover_images/81m1s4wIPML.jpg', 'QA 100.74.B50', '2023-04-19 10:04:40'),
-	(16, 'And Then There Were None', 'Agatha Christie', 'Agatha Christie', 1, '000004', '2021', '100', '130', '/static/uploads/cover_images/and-then-there-were-none-1.jpg', 'QA 100.74.B50', '2023-04-19 10:05:24'),
-	(17, 'The Hobbit', 'JRR Tolkien', 'JRR Tolkien', 3, '000004', '2022', '400', '450', '/static/uploads/cover_images/509977c969beddec46000011.jpg', 'QA 100.74.B50', '2023-04-19 10:06:27'),
-	(18, 'The Lion, the Witch and the Wardrobe', 'CS Lewis', 'CS Lewis', 3, '00005', '2023', '150', '600', '/static/uploads/cover_images/narnia.jpg', 'QA 100.74.B50', '2023-04-19 10:07:08'),
-	(19, 'The Eye of the World', 'Robert Jordan', 'Robert Jordan', 3, '0000007', '2021', '100', '1600', '/static/uploads/cover_images/1663778488-51vYL46dfL._SL500_.jpg', 'QA 100.74.B50', '2023-04-19 13:18:56');
+INSERT INTO `tbl_books` (`book_id`, `book_title`, `book_author`, `book_publisher_name`, `book_category_id`, `book_isbn`, `book_year_published`, `book_qty`, `book_price`, `book_cover_img`, `book_location`, `book_accession_num`, `book_call_number`, `book_ddc`, `date_added`) VALUES
+	(13, 'A Tale Of Two Cities', 'Charles Dickens', 'Charles Dickens', 10, '000001', '2020', '200', '500', '/static/uploads/cover_images/ataleoftwocities.jpg', '', NULL, 'QA 100.74.B50', NULL, '2023-04-19 10:03:10'),
+	(14, 'The Little Prince', 'Antoine de Saint-Exupéry', 'Antoine de Saint', 9, '000002', '2020', '150', '650', '/static/uploads/cover_images/the-little-prince-60.jpg', '', NULL, 'QA 100.74.B50', NULL, '2023-04-19 10:03:56'),
+	(15, 'Harry Potter and the Philosopher\'s Stone', 'JK Rowling', 'JK Rowling', 3, '000003', '1995', '300', '1500', '/static/uploads/cover_images/81m1s4wIPML.jpg', '', NULL, 'QA 100.74.B50', NULL, '2023-04-19 10:04:40'),
+	(16, 'And Then There Were None', 'Agatha Christie', 'Agatha Christie', 1, '000004', '2021', '100', '130', '/static/uploads/cover_images/and-then-there-were-none-1.jpg', '', NULL, 'QA 100.74.B50', NULL, '2023-04-19 10:05:24'),
+	(17, 'The Hobbit', 'JRR Tolkien', 'JRR Tolkien', 3, '000004', '2022', '400', '450', '/static/uploads/cover_images/509977c969beddec46000011.jpg', '', NULL, 'QA 100.74.B50', NULL, '2023-04-19 10:06:27'),
+	(18, 'The Lion, the Witch and the Wardrobe', 'CS Lewis', 'CS Lewis', 3, '00005', '2023', '150', '600', '/static/uploads/cover_images/narnia.jpg', '', NULL, 'QA 100.74.B50', NULL, '2023-04-19 10:07:08'),
+	(19, 'The Eye of the World', 'Robert Jordan', 'Robert Jordan', 3, '0000007', '2021', '100', '1600', '/static/uploads/cover_images/1663778488-51vYL46dfL._SL500_.jpg', '', NULL, 'QA 100.74.B50', NULL, '2023-04-19 13:18:56');
 
 -- Dumping structure for table lms.tbl_book_category
 CREATE TABLE IF NOT EXISTS `tbl_book_category` (
@@ -89,7 +92,7 @@ INSERT INTO `tbl_borrowed_books` (`borrow_id`, `user_id`, `trans_id`, `status`, 
 	(16, 1, 'BRW-20230426084906', 'R', '2023-04-25 00:00:00', '2023-04-26 00:00:00', 4, '2023-04-26 08:49:06'),
 	(17, 4, 'BRW-20230426111127', 'R', '2023-04-25 00:00:00', '2023-04-26 00:00:00', 3, '2023-04-26 11:11:27'),
 	(20, 3, 'BRW-20230426111554', 'R', '2023-04-25 00:00:00', '2023-04-26 00:00:00', 5, '2023-04-26 11:15:54'),
-	(21, 4, 'BRW-20230426111730', 'S', '2023-04-25 00:00:00', NULL, 0, '2023-04-26 11:17:30'),
+	(21, 4, 'BRW-20230426111730', 'R', '2023-04-25 00:00:00', '2023-04-26 00:00:00', 3, '2023-04-26 11:17:30'),
 	(22, 4, 'BRW-20230426115732', 'S', '2023-04-26 00:00:00', NULL, 0, '2023-04-26 11:57:32');
 
 -- Dumping structure for table lms.tbl_borrowed_books_details
@@ -102,9 +105,9 @@ CREATE TABLE IF NOT EXISTS `tbl_borrowed_books_details` (
   `date_returned` datetime DEFAULT NULL,
   `date_added` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`borrow_detail_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=latin1;
 
--- Dumping data for table lms.tbl_borrowed_books_details: ~9 rows (approximately)
+-- Dumping data for table lms.tbl_borrowed_books_details: ~10 rows (approximately)
 INSERT INTO `tbl_borrowed_books_details` (`borrow_detail_id`, `borrow_id`, `book_id`, `qty`, `qty_returned`, `date_returned`, `date_added`) VALUES
 	(17, 8, 16, '1', '1', '2023-04-26 00:00:00', '2023-04-19 14:05:05'),
 	(18, 9, 13, '1', '1', '2023-04-25 00:00:00', '2023-04-25 14:40:12'),
@@ -114,7 +117,9 @@ INSERT INTO `tbl_borrowed_books_details` (`borrow_detail_id`, `borrow_id`, `book
 	(26, 16, 17, '5', '5', '2023-04-26 00:00:00', '2023-04-26 08:49:21'),
 	(30, 17, 17, '2', '2', '2023-04-26 00:00:00', '2023-04-26 11:11:49'),
 	(31, 20, 17, '1', '1', '2023-04-26 00:00:00', '2023-04-26 11:15:58'),
-	(32, 21, 17, '1', NULL, NULL, '2023-04-26 11:17:35');
+	(32, 21, 17, '1', '1', '2023-04-26 00:00:00', '2023-04-26 11:17:35'),
+	(33, 21, 18, '1', '1', '2023-04-26 00:00:00', '2023-04-26 13:17:06'),
+	(34, 21, 13, '1', '1', '2023-04-26 00:00:00', '2023-04-26 13:17:09');
 
 -- Dumping structure for table lms.tbl_user
 CREATE TABLE IF NOT EXISTS `tbl_user` (
