@@ -28,6 +28,9 @@ class Books(db.Model):
     book_price = db.Column(db.String(16), nullable=True)
     book_cover_img = db.Column(db.Text(), nullable=True)
     book_location = db.Column(db.Text(), nullable=True)
+    book_accession_num = db.Column(db.Text(), nullable=True)
+    book_call_number = db.Column(db.Text(), nullable=True)
+    book_ddc = db.Column(db.Text(), nullable=True)
     date_added = db.Column(db.DateTime(timezone=True), default=func.now())
     category = db.relationship('Category')
 

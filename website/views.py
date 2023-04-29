@@ -121,6 +121,9 @@ def books():
         price = request.form.get('price')
         file = request.files['cover_image']
         location = request.form.get('location')
+        accession_num = request.form.get('accession_num')
+        call_number = request.form.get('call_number')
+        ddc = request.form.get('ddc')
 
         # if file.filename == '':
         #     flash('No selected file')
@@ -135,7 +138,18 @@ def books():
             covr_file = filePath.replace("website", '')
 
         # add to database
-        book = Books(book_title=title, book_author=author, book_publisher_name=publisher_name, book_category_id=category, book_isbn=isbn, book_year_published=year_publish, book_qty=qty, book_price=price, book_cover_img=covr_file, book_location=location)
+        book = Books(book_title=title, book_author=author,\
+            book_publisher_name=publisher_name,\
+            book_category_id=category,\
+            book_isbn=isbn,\
+            book_year_published=year_publish,\
+            book_qty=qty, book_price=price,\
+            book_cover_img=covr_file,\
+            book_location=location,\
+            book_accession_num=accession_num,\
+            book_call_number=call_number,\
+            book_ddc=ddc)
+
         db.session.add(book)
         db.session.commit()
 
@@ -153,7 +167,7 @@ def books():
             "book_publisher_name": book.book_publisher_name,
             "book_isbn": book.book_isbn,
             "book_year_published": book.book_year_published,
-            "book_location": book.book_location,
+            "book_call_number": book.book_call_number,
             "book_price": book.book_price,
             "book_cover_img": book.book_cover_img,
             "book_category": book.category.book_category,
@@ -164,6 +178,41 @@ def books():
         })
 
     return render_template("books.html", user=current_user, categories=categories, books=data)
+
+@views.route('/books/edit', methods=['GET', 'POST'])
+@login_required
+def book_edit():
+    if request.method == 'POST':
+        requestData = json.loads(request.data)
+        book_id = requestData['book_id']
+
+        categories = Category.query.all()
+        data = []
+        books = Books.query.filter_by(book_id=book_id).all()
+        for book in books:
+            data.append({
+                "book_id": book.book_id,
+                "book_title": book.book_title,
+                "book_author": book.book_author,
+                "book_publisher_name": book.book_publisher_name,
+                "book_isbn": book.book_isbn,
+                "book_year_published": book.book_year_published,
+                "book_qty": book.book_qty,
+                "book_price": book.book_price,
+                "book_call_number": book.book_call_number,
+                "book_accession_num": book.book_accession_num,
+                "book_location": book.book_location,
+                "book_ddc": book.book_ddc,
+                "book_cover_img": book.book_cover_img,
+                "book_category": book.category.book_category,
+                "book_category_id": book.book_category_id,
+                "borrows": bookBorrowCount(book.book_id),
+                "onshelf": booksOnShelf(book.book_id),
+                "date_added": book.date_added.strftime("%Y-%m-%d")
+            })
+
+        response = {"data": data}
+        return jsonify(response)
 
 @views.route('/books/borrow', methods=['GET', 'POST'])
 @login_required
@@ -487,7 +536,7 @@ def collab_filter_algo(user_id):
                 "book_publisher_name": book.book_publisher_name,
                 "book_isbn": book.book_isbn,
                 "book_year_published": book.book_year_published,
-                "book_location": book.book_location,
+                "book_call_number": book.book_call_number,
                 "book_cover_img": book.book_cover_img,
                 "book_category": book.category.book_category,
                 "borrows": bookBorrowCount(book.book_id),

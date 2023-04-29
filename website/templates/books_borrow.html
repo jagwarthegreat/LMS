@@ -461,7 +461,7 @@
                 const avgBook = (book_row.avg_rating > 0)?(parseFloat(book_row.avg_rating)).toFixed(1):0;
                 var cover = book_row.book_cover_img == "" ? "/static/assets/img/default_book_cover.jpg" :book_row.book_cover_img;
 
-                books += '<div class="col-md-3 mt-2 d-flex hoverBook" onclick="clickRecommended('+book_row.book_id+')"><img src="'+cover+'" style="border-radius: 3px;height: 100%; width: 112px; object-fit: fill;"><div class="bd rounded hoverDt" style="width: 100%;"><div class="book-details"><span>'+book_row.book_title+'</span><span class="book-desc">'+book_row.book_author+' ('+book_row.book_year_published+')</span><span class="book-desc">'+book_row.book_location+'</span><span class="book-desc">Borrows: '+book_row.borrows+'</span><span class="book-desc">On shelf: '+book_row.onshelf+'</span><span class="book-desc">Rating: '+avgBook+'/5</span><div class="avgrating" id="avgrating'+book_row.book_id+'"></div><div class="book-ratings mt-1 mb-2"><span class="badge badge-secondary" style="font-size: 11px; font-weight: 400;">'+book_row.book_category+'</span></div></div></div></div>';
+                books += '<div class="col-md-4 mt-2 d-flex hoverBook" onclick="clickRecommended('+book_row.book_id+')"><img src="'+cover+'" style="border-radius: 3px;height: 100%; width: 112px; object-fit: fill;"><div class="bd rounded hoverDt" style="width: 100%;"><div class="book-details"><span>'+book_row.book_title+'</span><span class="book-desc">'+book_row.book_author+' ('+book_row.book_year_published+')</span><span class="book-desc">'+book_row.book_call_number+'</span><span class="book-desc">Borrows: '+book_row.borrows+'</span><span class="book-desc">On shelf: '+book_row.onshelf+'</span><span class="book-desc">Rating: '+avgBook+'/5</span><div class="avgrating" id="avgrating'+book_row.book_id+'"></div><div class="book-ratings mt-1 mb-2"><span class="badge badge-secondary" style="font-size: 11px; font-weight: 400;">'+book_row.book_category+'</span></div></div></div></div>';
 
                 books_with_avg[book_row.book_id] = avgBook;
             }
@@ -534,7 +534,7 @@
     }
 
     .hoverBook:hover > .hoverDt {
-        background-color: #0000002e;
+        background-color: #00000014;
     }
 
     .avgrating {

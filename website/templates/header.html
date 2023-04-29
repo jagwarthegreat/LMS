@@ -1,12 +1,15 @@
 <div class="az-header">
     <div class="container">
         <div class="az-header-left">
-            <a href="{{url_for('views.home')}}" class="az-logo"><span></span> LMS</a>
+            <a href="{{url_for('views.home')}}" class="az-logo"><span></span> 
+                <img src="{{ url_for('static', filename='assets/img/silay_logo.png') }}" style="width: 13%;margin-right: 10px;" class="rounded-circle" alt="">
+                <span style="color: #2E3192;padding-right: 7px;">Silay Institute</span>Library
+            </a>
             <a href="" id="azMenuShow" class="az-header-menu-icon d-lg-none"><span></span></a>
         </div><!-- az-header-left -->
         <div class="az-header-menu">
-            <div class="az-header-menu-header">
-                <a href="{{url_for('views.home')}}" class="az-logo"><span></span> LMS</a>
+            <div class="az-header-menu-header mt-4">
+                <a href="{{url_for('views.home')}}" class="az-logo"><span></span> Silay Institute Library</a>
                 <a href="" class="close">&times;</a>
             </div><!-- az-header-menu-header -->
             <ul class="nav">

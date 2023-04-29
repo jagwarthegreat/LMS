@@ -29,7 +29,7 @@
   <meta name="description" content="Responsive Bootstrap 4 Dashboard Template">
   <meta name="author" content="BootstrapDash">
 
-  <title>Login - LMS</title>
+  <title>Login - SIL</title>
 
   <!-- vendor css -->
   <link href="{{ url_for('static', filename='assets/lib/fontawesome-free/css/all.min.css') }}" rel="stylesheet">
@@ -50,9 +50,12 @@
 
   <div class="az-signin-wrapper">
     <div class="az-card-signin">
-
       <div class="az-signin-header">
-        <h2>Welcome back!</h2>
+        <div class"col-md-12" style="text-align: center;padding-bottom: 10px;">
+            <img src="{{ url_for('static', filename='assets/img/silay_logo.png') }}" style="width: 40%;margin-right: 10px;" class="rounded-circle" alt="">
+            <h2><span style="color: #2E3192;padding-right: 5px;">Silay Institute</span>Library</h2>
+        </div>  
+        <h3 class="mt-2">Welcome back!</h3>
         <h5>Please sign in to continue</h5>
 
         <form method="POST">
