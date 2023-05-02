@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for
+from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for,abort
 from flask_login import login_required, current_user
 from .models import User, Books, Category, BorrowedBooks, BorrowedBooksDetail
 from . import db, ALLOWED_EXTENSIONS, UPLOAD_FOLDER
@@ -213,6 +213,57 @@ def book_edit():
 
         response = {"data": data}
         return jsonify(response)
+
+@views.route('/books/update', methods=['GET', 'POST'])
+@login_required
+def book_update():
+    if request.method == 'POST':
+        book_id = request.form.get('edit_book_id')
+
+        filePath = ""
+        covr_file = ""
+
+        # bookDt = Books.query.filter_by(book_id=book_id).first()
+
+        # if bookDt.book_cover_img is not None:
+        #     covr_file = bookDt.book_cover_img
+
+        # check if the post request has the file part
+        if 'edit_cover_image' in request.files:
+            file = request.files['edit_cover_image']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                filePath = os.path.join(UPLOAD_FOLDER, filename)
+                # file.save(filePath)
+
+                covr_file = filePath.replace("website", '')
+
+        edit_title = request.form.get('edit_title')
+        edit_author = request.form.get('edit_author')
+        edit_publisher_name = request.form.get('edit_publisher_name')
+        edit_isbn = request.form.get('edit_isbn')
+        edit_year_published = request.form.get('edit_year_published')
+        edit_quantity = request.form.get('edit_quantity')
+        edit_price = request.form.get('edit_price')
+        edit_call_number = request.form.get('edit_call_number')
+        edit_accession_num = request.form.get('edit_accession_num')
+        edit_location = request.form.get('edit_location')
+        edit_ddc = request.form.get('edit_title')
+        edit_category = request.form.get('edit_category')
+
+        update_book = {Books.book_title:edit_title,Books.book_author:edit_author,Books.book_publisher_name:edit_publisher_name,Books.book_isbn:edit_isbn,Books.book_year_published:edit_year_published,Books.book_qty:edit_quantity,Books.book_price:edit_price,Books.book_call_number:edit_call_number,Books.book_accession_num:edit_accession_num,Books.book_location:edit_location,Books.book_ddc:edit_ddc,Books.book_cover_img:covr_file,Books.book_category_id:edit_category}
+
+        db.session.query(Books).filter(Books.book_id == book_id).update(update_book, synchronize_session = False)
+        db.session.commit()
+
+        # flash('Book updated', category="success")
+        # return jsonify({ "updated_response": "updated" })
+
+        # flash('Book updated', category="success")
+        # return Response(jsonify({ "updated_response": "updated" }), status=200, mimetype='application/json')
+
+        flash('Book updated!', category='success')
+        return redirect(url_for('views.books'))
 
 @views.route('/books/borrow', methods=['GET', 'POST'])
 @login_required

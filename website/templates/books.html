@@ -254,7 +254,10 @@
                         </div>
                         <div class="form-group">
                             <label>Cover Image </label>
-                            <input type="file" class="form-control" id="edit_cover_image" />
+                            <div style="display: flex; flex-direction: row; align-items: flex-end;">
+                                <span id="edit_book_cover"></span>
+                                <input type="file" class="form-control" id="edit_cover_image" />
+                            </div>
                         </div>
                         <div class="form-group">
                             <label>Location <span class="text-danger">*</span></label>
@@ -327,9 +330,9 @@
         .then(data => data.json())
         .then(json => {
             var bdata = json.data[0];
+            var book_cover = "";
 
-            console.log(bdata);
-            console.log(json.data[0]);
+            $("#edit_cover_image").val("");
             $("#edit_book_id").val(book_id);
             $("#edit_title").val(bdata.book_title);
             $("#edit_author").val(bdata.book_author);
@@ -344,7 +347,60 @@
             $("#edit_call_number").val(bdata.book_call_number);
             $("#edit_ddc").val(bdata.book_ddc);
 
+            if (bdata.book_cover_img == ""){
+                book_cover = "<img src='{{ url_for('static', filename='assets/img/default_book_cover.jpg') }}' style='width: 50px; object-fit: cover;'>";
+            }else{
+                 book_cover = "<img src='"+bdata.book_cover_img+"' style='width: 50px; object-fit: cover;'>"
+            }
+
+            $("#edit_book_cover").html(book_cover);
+
             $("#editBooksModal").modal('show');
+        });
+    }
+
+    function updateBook() {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Are you sure you want to update this book?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonClass: "btn-danger",
+            confirmButtonText: "Yes, delete!",
+            cancelButtonText: "No, cancel!",
+        }).then(function(result) {
+            if (result.value) {
+
+                var formData = new FormData();
+                formData.append('edit_book_id', $("#edit_book_id").val());
+                formData.append('edit_cover_image', $("#edit_cover_image")[0].files[0]);
+                formData.append('edit_title', $("#edit_title").val());
+                formData.append('edit_author', $("#edit_author").val());
+                formData.append('edit_publisher_name', $("#edit_publisher_name").val());
+                formData.append('edit_category', $("#edit_category").val());
+                formData.append('edit_price', $("#edit_price").val());
+                formData.append('edit_isbn', $("#edit_isbn").val());
+                formData.append('edit_year_published', $("#edit_year_published").val());
+                formData.append('edit_quantity', $("#edit_quantity").val());
+                formData.append('edit_location', $("#edit_location").val());
+                formData.append('edit_accession_num', $("#edit_accession_num").val());
+                formData.append('edit_call_number', $("#edit_call_number").val());
+                formData.append('edit_ddc', $("#edit_ddc").val());
+
+                console.log(formData);
+
+                // fetch("/books/update", {
+                //     method: "POST",
+                //     headers: {
+                //         'Content-Type': 'multipart/form-data'
+                //     },
+                //     body: formData
+                // })
+                //     .then(data => data.json())
+                //     .then(json => {
+                //         // window.location.href = "/books";
+                //     });
+            }
         });
     }
 </script>
