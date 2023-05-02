@@ -208,88 +208,89 @@
                     </svg>
                 </button>
             </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-12">
-                        <input type="hidden" id="edit_book_id">
-                        <div class="form-group">
-                            <label>Title <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="edit_title" required autocomplete="off" />
-                        </div>
-                        <div class="form-group">
-                            <label>Author <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="edit_author" required autocomplete="off" />
-                        </div>
-                        <div class="form-group">
-                            <label>Publisher Name <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="edit_publisher_name" required
-                                autocomplete="off" />
-                        </div>
-                        <div class="form-group">
-                            <label>Category <span class="text-danger">*</span></label>
-                            <select class="form-control" id="edit_category" required>
-                                <option label="Choose one"></option>
-                                {% for category in categories %}
-                                <option value="{{ category.book_category_id }}">{{ category.book_category }}
-                                </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>ISBN <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="edit_isbn" required autocomplete="off" />
-                        </div>
-                        <div class="form-group">
-                            <label>Year Published <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="edit_year_published" required
-                                autocomplete="off" />
-                        </div>
-                        <div class="form-group">
-                            <label>QTY <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="edit_quantity" required autocomplete="off" />
-                        </div>
-                        <div class="form-group">
-                            <label>Price <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="edit_price" required autocomplete="off" />
-                        </div>
-                        <div class="form-group">
-                            <label>Cover Image </label>
-                            <div style="display: flex; flex-direction: row; align-items: flex-end;">
-                                <span id="edit_book_cover"></span>
-                                <input type="file" class="form-control" id="edit_cover_image" />
+            <form method="POST" enctype="multipart/form-data" id="updateBookForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <input type="hidden" id="edit_book_id" name="edit_book_id">
+                            <div class="form-group">
+                                <label>Title <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="edit_title" name="edit_title" required autocomplete="off" />
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Location <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="edit_location" required autocomplete="off" />
-                        </div>
-                        <div class="form-group">
-                            <label>Accession Number <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="edit_accession_num" required autocomplete="off" />
-                        </div>
-                        <div class="form-group">
-                            <label>Call number <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="edit_call_number" required autocomplete="off" />
-                        </div>
-                        <div class="form-group">
-                            <label>DDC <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="edit_ddc" required autocomplete="off" />
+                            <div class="form-group">
+                                <label>Author <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="edit_author" name="edit_author" required autocomplete="off" />
+                            </div>
+                            <div class="form-group">
+                                <label>Publisher Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="edit_publisher_name" name="edit_publisher_name" required
+                                    autocomplete="off" />
+                            </div>
+                            <div class="form-group">
+                                <label>Category <span class="text-danger">*</span></label>
+                                <select class="form-control" id="edit_category" name="edit_category" required>
+                                    <option label="Choose one"></option>
+                                    {% for category in categories %}
+                                    <option value="{{ category.book_category_id }}">{{ category.book_category }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>ISBN <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="edit_isbn" name="edit_isbn" required autocomplete="off" />
+                            </div>
+                            <div class="form-group">
+                                <label>Year Published <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="edit_year_published" name="edit_year_published" required
+                                    autocomplete="off" />
+                            </div>
+                            <div class="form-group">
+                                <label>QTY <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="edit_quantity" name="edit_quantity" required autocomplete="off" />
+                            </div>
+                            <div class="form-group">
+                                <label>Price <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="edit_price" name="edit_price" required autocomplete="off" />
+                            </div>
+                            <div class="form-group">
+                                <label>Cover Image </label>
+                                <div style="display: flex; flex-direction: row; align-items: flex-end;">
+                                    <span id="edit_book_cover"></span>
+                                    <input type="file" class="form-control" id="edit_cover_image" name="edit_cover_image"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Location <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="edit_location" name="edit_location" required autocomplete="off" />
+                            </div>
+                            <div class="form-group">
+                                <label>Accession Number <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="edit_accession_num" name="edit_accession_num" required autocomplete="off" />
+                            </div>
+                            <div class="form-group">
+                                <label>Call number <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="edit_call_number" name="edit_call_number" required autocomplete="off" />
+                            </div>
+                            <div class="form-group">
+                                <label>DDC <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="edit_ddc" name="edit_ddc" required autocomplete="off" />
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-light-secondary" data-dismiss="modal">
-                    <i class="bx bx-x d-block d-sm-none"></i>
-                    <span class="d-none d-sm-block">Close</span>
-                </button>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light-secondary" data-dismiss="modal">
+                        <i class="bx bx-x d-block d-sm-none"></i>
+                        <span class="d-none d-sm-block">Close</span>
+                    </button>
 
-                <button class="btn btn-dark ml-1" onclick="updateBook()">
-                    <i class=" bx bx-check d-block d-sm-none"></i>
-                    <span class="d-none d-sm-block">Save changes</span>
-                </button>
-            </div>
-            
+                    <button type="submit" class="btn btn-dark ml-1">
+                        <i class=" bx bx-check d-block d-sm-none"></i>
+                        <span class="d-none d-sm-block">Save changes</span>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -297,6 +298,21 @@
 <script>
     $(function() {
         $("#table1").DataTable();
+
+       
+        $("#updateBookForm").submit(function(event) {
+            event.preventDefault();
+            var formData = new FormData(this);
+
+            fetch("/books/update", {
+                method: "POST",
+                body: formData
+            })
+            .then(data => data.json())
+            .then(json => {
+                // window.location.href = "/books";
+            });
+        });
     });
 
     function deleteBook(bookId) {
@@ -366,7 +382,7 @@
             icon: "warning",
             showCancelButton: true,
             confirmButtonClass: "btn-danger",
-            confirmButtonText: "Yes, delete!",
+            confirmButtonText: "Yes, update!",
             cancelButtonText: "No, cancel!",
         }).then(function(result) {
             if (result.value) {
@@ -387,19 +403,19 @@
                 formData.append('edit_call_number', $("#edit_call_number").val());
                 formData.append('edit_ddc', $("#edit_ddc").val());
 
-                console.log(formData);
+                console.log($("#edit_book_id").val());
 
-                // fetch("/books/update", {
-                //     method: "POST",
-                //     headers: {
-                //         'Content-Type': 'multipart/form-data'
-                //     },
-                //     body: formData
-                // })
-                //     .then(data => data.json())
-                //     .then(json => {
-                //         // window.location.href = "/books";
-                //     });
+                fetch("/books/update", {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    },
+                    body: formData
+                })
+                    .then(data => data.json())
+                    .then(json => {
+                        // window.location.href = "/books";
+                    });
             }
         });
     }
