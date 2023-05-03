@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Borrowed/Returned{% endblock %}
+
+{% block content %}
+<div class="az-content-body">
+	<div class="az-content-breadcrumb">
+        <span>Dashboard</span>
+        <span>Report</span>
+        <span>Borrowed/Returned</span>
+    </div>
+    <h2 class="az-content-title">Borrowed/Returned</h2>
+
+	<div class="row mg-b-20">
+        <div class="col-12" id="search_books">
+            <div class="row">
+                <div class="col-lg-2 col-md-2 col-sm-12">
+                	<div class="row">
+	                   <select class="form-control" name="category" id="category" required="" onchange="filterTransReport()">
+	                   		<option value="">- filter by -</option>
+	                   		<option value="S">SAVED</option>
+	                   		<option value="B">BORROWED</option>  
+	                   		<option value="R">RETURNED</option>                
+	                    </select>
+	                </div>
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-12">
+                	<div class="row">
+	                   <button class="btn btn-dark ml-1" onclick="printContent('trans_result_content')">
+	                        <i class=" bx bx-check d-block d-sm-none"></i>
+	                        <span class="d-none d-sm-block">Print</span>
+	                    </button>
+	                </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 mt-3">
+        	<div class="row">
+	        	<div class="table-responsive" id="trans_result_content">
+		            
+	          	</div>
+          	</div>
+        </div>
+    </div>
+</div>
+<script>
+	$(function () {
+		filterTransReport();
+	});
+
+	function filterTransReport() {
+		var filter_category = $("#category").val();
+		fetch("/report/bookTransaction", {
+            method: "POST",
+            body: JSON.stringify({ filter_category: filter_category })
+        })
+        .then(data => data.json())
+        .then(json => {
+        	var trans = "";
+
+        	trans += '<table class="table table-bordered mg-b-0">';
+		    trans += '<thead><tr><th colspan="8" class="text-center"><h4>Borrowed/Returned Report</h4></th></tr><tr>';
+		    trans += '<th>#</th>';
+		    trans += '<th>Borrower</th>';
+		    trans += '<th>Transaction id</th>';
+		    trans += '<th>Status</th>';
+		    trans += '<th>Date Borrowed</th>';
+		    trans += '<th>Date Returned</th>';
+		    trans += '<th>Rating</th>';
+		    trans += '</tr></thead><tbody>';
+        	for (var i = 0; i < json.data.length; i++) {
+                const borrow = json.data[i];
+
+		        trans += '<tr>';
+		        trans += '<td scope="row">'+borrow.count+'</td>';
+		        trans += '<td scope="row">'+borrow.borrower+'</td>';
+		        trans += '<td>'+borrow.trans_id+'</td>';
+		        trans += '<td>'+borrow.status+'</td>';
+		        trans += '<td>'+borrow.date_borrowed+'</td>';
+		        trans += '<td>'+borrow.date_returned+'</td>';
+		        trans += '<td>'+borrow.rating+'</td>';
+		        trans += '</tr>';  
+        	}
+        	trans += '</tbody></table>';
+        	$("#trans_result_content").html(trans);
+    	});
+	}
+</script>
+{% endblock %}

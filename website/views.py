@@ -65,7 +65,7 @@ def filteredBooksData(book_search, filter_category):
             "book_publisher_name": book.book_publisher_name,
             "book_isbn": book.book_isbn,
             "book_year_published": book.book_year_published,
-            "book_location": book.book_location,
+            "book_call_number": book.book_call_number,
             "book_cover_img": book.book_cover_img,
             "book_category": book.category.book_category,
             "borrows": bookBorrowCount(book.book_id),
@@ -687,3 +687,124 @@ def get_recommendations(user_id, df, num_recommendations):
 #     top_n_titles = books[books['book_id'].isin(top_n_book_ids)]['title']
     
     return top_n_book_ids
+
+@views.route('/report/user', methods=['GET', 'POST'])
+@login_required
+def reportUser():
+    if request.method == 'POST':
+        requestData = json.loads(request.data)
+        filter_category = requestData['filter_category']
+
+        count=0
+        data = []
+        query = User.query
+        if filter_category:
+            query = query.filter_by(category=filter_category)
+
+        users = query.all()
+        for user in users:
+            count += 1
+            data.append({
+                "count": count,
+                "id": user.id,
+                "fname": user.fname,
+                "mname": user.mname,
+                "lname": user.lname,
+                "category": user.category,
+            })
+
+        filteredUserReport = jsonify({"data": data})
+        return filteredUserReport
+    
+    return render_template("report_user.html", user=current_user)
+
+@views.route('/report/books', methods=['GET', 'POST'])
+@login_required
+def reportBooks():
+    if request.method == 'POST':
+        requestData = json.loads(request.data)
+        filter_category = requestData['filter_category']
+
+        count=0
+        data = []
+        query = Books.query
+
+        if filter_category:
+            query = query.filter_by(book_category_id=filter_category)
+
+        books = query.all()
+        for book in books:
+            category_id = book.category.book_category
+
+            # if category_id not in data:
+            #     data[category_id] = []
+
+            count += 1
+            data.append({
+                "count": count,
+                "book_id": book.book_id,
+                "book_title": book.book_title,
+                "book_author": book.book_author,
+                "book_publisher_name": book.book_publisher_name,
+                "book_isbn": book.book_isbn,
+                "book_year_published": book.book_year_published,
+                "book_call_number": book.book_call_number,
+                "book_cover_img": book.book_cover_img,
+                "book_category": book.category.book_category,
+                "borrows": bookBorrowCount(book.book_id),
+                "onshelf": booksOnShelf(book.book_id),
+                "avg_rating": book.avg_rating,
+                "date_added": book.date_added.strftime("%Y-%m-%d")
+            })
+
+        filteredBooks = jsonify({"data": data})
+        return filteredBooks
+    
+    genras = Category.query.filter_by().all()
+    return render_template("report_book.html", user=current_user, genras=genras)
+
+@views.route('/report/bookTransaction', methods=['GET', 'POST'])
+@login_required
+def reportBookTransaction():
+    if request.method == 'POST':
+        requestData = json.loads(request.data)
+        filter_category = requestData['filter_category']
+
+        count=0
+        data = []
+        query = BorrowedBooks.query
+
+        if filter_category:
+            query = query.filter_by(status=filter_category)
+
+        borrows = query.all()
+        for borrow in borrows:
+            count += 1
+
+            if borrow.status == "B":
+                stats = "Borrowed"
+            elif borrow.status == "R":
+                stats = "Returned"
+            else:
+                stats = "Saved"
+
+            if borrow.date_returned:
+                dr = borrow.date_returned.strftime("%Y-%m-%d")
+            else:
+                dr = ""
+
+            data.append({
+                "count": count,
+                "borrower": borrow.user.fname + " " + borrow.user.mname + " " + borrow.user.lname,
+                "trans_id": borrow.trans_id,
+                "status_code": borrow.status,
+                "status": stats,
+                "date_borrowed": borrow.date_borrowed.strftime("%Y-%m-%d"),
+                "date_returned": dr,
+                "rating": borrow.rating
+            })
+
+        borrows = jsonify({"data": data})
+        return borrows
+
+    return render_template("report_book_transaction.html", user=current_user)

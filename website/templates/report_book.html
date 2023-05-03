@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Book Report{% endblock %}
+
+{% block content %}
+<div class="az-content-body">
+	<div class="az-content-breadcrumb">
+        <span>Dashboard</span>
+        <span>Report</span>
+        <span>Books</span>
+    </div>
+    <h2 class="az-content-title">Book Report</h2>
+
+	<div class="row mg-b-20">
+        <div class="col-12" id="search_books">
+            <div class="row">
+                <div class="col-lg-2 col-md-2 col-sm-12">
+                	<div class="row">
+	                   <select class="form-control" name="category" id="category" required="" onchange="filterBookReport()">
+	                   		<option value="">- all categories -</option>
+	                        {% for genre in genras %}
+	                        <option value="{{ genre.book_category_id }}">
+	                            {{ genre.book_category }}
+	                        </option>
+	                        {% endfor %}                  
+	                    </select>
+	                </div>
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-12">
+                	<div class="row">
+	                   <button class="btn btn-dark ml-1" onclick="printContent('book_result_content')">
+	                        <i class=" bx bx-check d-block d-sm-none"></i>
+	                        <span class="d-none d-sm-block">Print</span>
+	                    </button>
+	                </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 mt-3">
+        	<div class="row">
+	        	<div class="table-responsive" id="book_result_content">
+		            
+	          	</div>
+          	</div>
+        </div>
+    </div>
+</div>
+<script>
+	$(function () {
+		filterBookReport();
+	});
+
+	function filterBookReport() {
+		var filter_category = $("#category").val();
+		fetch("/report/books", {
+            method: "POST",
+            body: JSON.stringify({ filter_category: filter_category })
+        })
+        .then(data => data.json())
+        .then(json => {
+        	var books = "";
+            // var books_with_avg = {};
+
+        	books += '<table class="table table-bordered mg-b-0">';
+		    books += '<thead><tr><th colspan="8" class="text-center"><h4>Book Report</h4></th></tr><tr>';
+		    books += '<th>#</th>';
+		    books += '<th>Title</th>';
+		    books += '<th>Author</th>';
+		    books += '<th>Call Number</th>';
+		    books += '<th>Borrows</th>';
+		    books += '<th>Available</th>';
+		    books += '<th>Rating</th>';
+		    books += '<th>Category</th>';
+		    books += '</tr></thead><tbody>';
+        	for (var i = 0; i < json.data.length; i++) {
+                const book_row = json.data[i];
+                const avgBook = (book_row.avg_rating > 0)?(parseFloat(book_row.avg_rating)).toFixed(1):0;
+
+		        books += '<tr>';
+		        books += '<td scope="row">'+book_row.count+'</td>';
+		        books += '<td scope="row">'+book_row.book_title+'</td>';
+		        books += '<td>'+book_row.book_author+' ('+book_row.book_year_published+')</td>';
+		        books += '<td>'+book_row.book_call_number+'</td>';
+		        books += '<td>'+book_row.borrows+'</td>';
+		        books += '<td>'+book_row.onshelf+'</td>';
+		        books += '<td>'+avgBook+'</td>';
+		        books += '<td>'+book_row.book_category+'</td>';
+		        books += '</tr>';  
+        	}
+        	books += '</tbody></table>';
+        	$("#book_result_content").html(books);
+    	});
+	}
+</script>
+{% endblock %}
